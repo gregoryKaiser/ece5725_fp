@@ -1,6 +1,5 @@
 #FOR ALL INDIVIDUAL WORK: make a seperate file
 
-#hero
 #globals - Caeli
 #   environment type
 #   global positoin
@@ -79,13 +78,8 @@ class hero(object):
         self.y = y
         self.width = width
         self.height = height
-        self.jumping = False
-        self.sliding = False
-        self.falling = False
-        self.slideCount = 0
-        self.jumpCount = 0
-        self.runCount = 0
-        self.slideUp = False
+        self.speedx = 0 #set high during button press
+        self.speedy = 0 #set high when jumping
 
         self.health = 100
         self.inventory = {}
@@ -94,5 +88,40 @@ class hero(object):
         self.speed = (2,2) #y-speed?
 
     def draw(self, win):
-        #could cycle through images for animation
         win.blit(image, (self.x, self.y))
+
+    def moveRight(self): #upon button press
+        self.speedx = 5
+
+    def moveLeft(self): #upon button press
+        self.speedx = -5
+
+    def jump(self): #upon button press
+        self.speedy = 5
+
+    def stopMoving(self); #upon button release
+        self.speedx = 0
+    
+    # def signal(self): #upon button press
+
+class obstacle():
+
+    def __init__(self, x, y, width, height, env_type):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.speedx = 0 #move with background
+        self.speedy = 0 #always zero
+        self.type = env_type
+
+    def draw(self, win):
+        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+        win.blit(image, (self.x, self.y))
+
+    def collide(self, rect): #copied from spike
+        if rect[0] + rect[2] > self.hitbox[0] and rect[0] < self.hitbox[0] + self.hitbox[2]:
+            if rect[1] < self.hitbox[3]:
+                return True
+        return False
