@@ -12,6 +12,8 @@ W, H = 240, 320
 win = pygame.display.set_mode((W, H))
 pygame.display.set_caption('And My Axe')
 
+circle = pygame.image.load(os.path("circle.png"))
+
 # background image load
 # bg = pygame.image.load(os.path.join('images', 'bg.png')).convert()
 # bgX = 0
@@ -21,9 +23,9 @@ clock = pygame.time.Clock()
 
 #====Create game objects====
 hero = classes.character(50, 50, 50, 50, 60, 60)
-env1 = classes.environment()
-block = classes.obstacle()
-all_objects = []
+env1 = classes.environment(100, 300, "hot", 1)
+block = classes.obstacle(circle, 100, 50, 100, 50, 80, 80, "hot")
+all_objects = [hero, env1, block]
 #TODO: fill all_objects with map
 disp_objects = []
 #====pygame timers and variables
@@ -31,6 +33,17 @@ run = True
 score = 0
 # pygame.time.set_timer(USEREVENT+1, 500)
 # pygame.time.set_timer(USEREVENT+2, 3000)
+
+while run: #main game loop
+    #loop through obstacles 
+    for obj in disp_objects:
+        #check for collision
+        if obj.collide(hero.hitbox):
+            #stop hero
+            hero.sp
+
+
+
 
 #main while:
 

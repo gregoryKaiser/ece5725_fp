@@ -20,10 +20,13 @@ class character(object):
         self.speed = (2,2) #y-speed?
         self.signaling = 0
 
+        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+
     def draw(self, win):
         win.blit(image, (self.x, self.y))
         if self.signaling:
             win.blit(sig_image, (self.x, self.y+20))
+
     def moveRight(self): #upon button press
         self.speedx = 5
 
@@ -81,18 +84,12 @@ class item(object):
         self.equippable = equippable
         self.picked_up = False
         self.image = image
+        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
 
     def draw(self, win):
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
-
-    def collide(self, rect): #copied from spike
-        if rect[0] + rect[2] > self.hitbox[0] and rect[0] < self.hitbox[0] + self.hitbox[2]:
-            if rect[1] < self.hitbox[3]:
-                self.picked_up = True
-                return True
-        return False
 
 class weapon(item):
     def __init__(self, image, name, x, y, global_x, global_y, width, height, equippable, attack):
@@ -161,7 +158,7 @@ class environment(object):
 
 class obstacle(object):
 
-    def __init__(self, x, y, glob_x, glob_y, width, height, env_type):
+    def __init__(self, image, x, y, glob_x, glob_y, width, height, env_type):
         self.x = x
         self.y = y
         self.glob_x = glob_x
@@ -171,14 +168,44 @@ class obstacle(object):
         self.speedx = 0 #move with background
         self.speedy = 0 #always zero
         self.type = env_type
+        self.image = image
+        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
 
     def draw(self, win):
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
-        win.blit(image, (self.x, self.y))
+        win.blit(self.image, (self.x, self.y))
 
-    def collide(self, rect): #copied from spike
+def collide(obj1, obj2):
+    collision_tuple = (0,0)
+
+
+    #if obj1 right edge> obj 2 left edge and not obj1 left edge< obj2 left edge
+        #collision from left to right
+        # if y direction overlap
+            #set obj1.speed[0] = 0
+
+    #if obj1 left edge< obj 2 right edge and not obj1 right edge> obj2 right edge
+        #collision from right to left
+        # if y direction overlap
+            #set obj1.speed -> 0
+            
+    #if obj1 left edge>obj2left edge and obj1right edge<obj2 right edge
+        #collision onnly vertical, dont change x speed
+        #if y bottom overlap, and speed negative
+            #set speedy=0
+        #if y top overlap, and speed positive
+            #set speedy=0
+
+    #x collision
+    if(obj1.hitbox[0] < obj2.hitbox[0] + obj2.hitbox[2] or obj1.hitbox[0] + obj1.hitbox[2] > obj2.hitbox[0]):
+        #in the correct x range
+        if
+    
+    
+    #y collision
         if rect[0] + rect[2] > self.hitbox[0] and rect[0] < self.hitbox[0] + self.hitbox[2]:
             if rect[1] < self.hitbox[3]:
                 return True
         return False
+    return collision_tuple
