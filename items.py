@@ -54,6 +54,14 @@ class weapon(item):
         super().__init__(image, name, x, y, global_x, global_y, width, height, equippable)
         self.attack = attack
 
+    def draw(self, win, hero):
+        if(self.picked_up):
+            draw_equipped(win, hero)
+        else:
+            self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+            pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+            win.blit(self.image, (self.x, self.y))
+
     def draw_equipped(self, win, hero):
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
@@ -66,6 +74,14 @@ class armor(item):
         self.defense = defense
         self.env_type = env_type
         self.body_location = body_location
+
+    def draw(self, win, hero):
+        if(self.picked_up):
+            draw_equipped(win, hero)
+        else:#draw on ground at initial position
+            self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+            pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+            win.blit(self.image, (self.x, self.y))
 
     def draw_equipped(self, win, hero):
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)

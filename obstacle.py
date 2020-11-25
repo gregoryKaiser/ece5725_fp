@@ -1,8 +1,10 @@
 class obstacle():
 
-    def __init__(self, x, y, width, height, env_type):
+    def __init__(self, x, y, glob_x, glob_y, width, height, env_type):
         self.x = x
         self.y = y
+        self.glob_x = glob_x
+        self.glob_y = glob_y
         self.width = width
         self.height = height
         self.speedx = 0 #move with background
