@@ -1,4 +1,4 @@
-#File to sore the item class
+#File to store the item class
 """
 png image --> image to represent item
 string name --> string name of the object, used for items stored in inventory
@@ -70,13 +70,17 @@ class armor(item):
     def draw_equipped(self, win, hero):
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+
         #TODO: figure out correct location on hero to draw
         if self.body_location == "head":
             win.blit(self.image, (hero.x + 5, hero.y + 10))
+
         elif self.body_location == "feet":
             win.blit(self.image, (hero.x + 5, hero.y + 10))
+
         elif self.body_location == "legs":
             win.blit(self.image, (hero.x + 5, hero.y + 10))
+            
         elif self.body_location == "torso":
             win.blit(self.image, (hero.x + 5, hero.y + 10))
 
