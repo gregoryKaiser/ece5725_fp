@@ -99,7 +99,7 @@ class hero(object):
     def jump(self): #upon button press
         self.speedy = 5
 
-    def stopMoving(self); #upon button release
+    def stopMoving(self): #upon button release
         self.speedx = 0
     
     # def signal(self): #upon button press
