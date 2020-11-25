@@ -102,4 +102,6 @@ class hero(object):
     def stopMoving(self): #upon button release
         self.speedx = 0
     
-    # def signal(self): #upon button press
+    #TODO: signal type and image asset
+    def signal(self): #upon button press
+        win.blit(sig_image, (self.x, self.y+20))
