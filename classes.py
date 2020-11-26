@@ -178,24 +178,34 @@ class obstacle(object):
 
 def collide(obj1, obj2):
     collision_tuple = (0,0)
+    obj1_left = obj1.hitbox[0]
+    obj1_right = obj1.hitbox[0] + obj1.hitbox[2]
+    obj1_top = obj1.hitbox[1] + obj1.hitbox[3]
+    obj1_bottom = obj1.hitbox[1]
 
+    obj2_left = obj2.hitbox[0]
+    obj2_right = obj2.hitbox[0] + obj1.hitbox[2]
+    obj2_top = obj2.hitbox[1] + obj1.hitbox[3]
+    obj2_bottom = obj2.hitbox[1]
 
-    #if obj1 right edge> obj 2 left edge and not obj1 left edge< obj2 left edge
-        #collision from left to right
-        # if y direction overlap
-            #set obj1.speed[0] = 0
+    if (obj1_right > obj2_left and obj1_left < obj2_left) or (obj1_left < obj2_right and obj1_right > obj2_right):
+        if obj1_bottom < obj2_top or obj1_top > obj2_bottom:
+            #obj1 is within y range of obj2
+            obj1.speed = 0
 
-    #if obj1 left edge< obj 2 right edge and not obj1 right edge> obj2 right edge
-        #collision from right to left
-        # if y direction overlap
-            #set obj1.speed -> 0
-            
-    #if obj1 left edge>obj2left edge and obj1right edge<obj2 right edge
-        #collision onnly vertical, dont change x speed
-        #if y bottom overlap, and speed negative
-            #set speedy=0
-        #if y top overlap, and speed positive
-            #set speedy=0
+    if obj1_left > obj2_left and obj1_right < obj2_right:
+        #obj1 is above or below obj2
+        if obj1_bottom < obj2_top:
+            #obj1 is above obj2
+            if obj1.speed[1] < 0:
+                #prevent obj1 from falling through obj2 but let them jump
+                obj1.speed[1] = 0
+        
+        if obj1_top > obj2_bottom:
+            #obj1 is below obj2
+            if obj1.speed[1] > 0:
+                #prevent obj1 from rising through obj2 but let them fall
+                obj1.speed[1] = 0
 
     #x collision
     if(obj1.hitbox[0] < obj2.hitbox[0] + obj2.hitbox[2] or obj1.hitbox[0] + obj1.hitbox[2] > obj2.hitbox[0]):
