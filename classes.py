@@ -1,9 +1,11 @@
+import pygame
+
 class character(object):
     #image assets
     #TODO: get image and define image path
-    #image = pygame.image.load(os.path(??))
-    image = 0
-    def __init__(self, x, y, glob_x, glob_y, width, height):
+    image = pygame.image.load("circle.png")
+    
+    def __init__(self, image, x, y, glob_x, glob_y, width, height):
         self.x = x
         self.y = y
         self.glob_x = glob_x
@@ -12,20 +14,19 @@ class character(object):
         self.height = height
         self.speedx = 0 #set high during button press
         self.speedy = 0 #set high when jumping
-
+        self.image = image
         self.health = 100
         self.inventory = {}
         self.attack = 0
         self.defense = 0
-        self.speed = (2,2) #y-speed?
         self.signaling = 0
 
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
 
     def draw(self, win):
-        win.blit(image, (self.x, self.y))
+        win.blit(self.image, (self.x, self.y))
         if self.signaling:
-            win.blit(sig_image, (self.x, self.y+20))
+            win.blit(self.image, (self.x, self.y+20))
 
     def moveRight(self): #upon button press
         self.speedx = 5
@@ -177,7 +178,8 @@ class obstacle(object):
         win.blit(self.image, (self.x, self.y))
 
 def collide(obj1, obj2):
-    collision_tuple = (0,0)
+    #NOTE: obj1 must have a speed
+    # collision_tuple = (0,0)
     obj1_left = obj1.hitbox[0]
     obj1_right = obj1.hitbox[0] + obj1.hitbox[2]
     obj1_top = obj1.hitbox[1] + obj1.hitbox[3]
@@ -188,34 +190,41 @@ def collide(obj1, obj2):
     obj2_top = obj2.hitbox[1] + obj1.hitbox[3]
     obj2_bottom = obj2.hitbox[1]
 
+    collided = 0
+
+    #collision code 
     if (obj1_right > obj2_left and obj1_left < obj2_left) or (obj1_left < obj2_right and obj1_right > obj2_right):
         if obj1_bottom < obj2_top or obj1_top > obj2_bottom:
             #obj1 is within y range of obj2
-            obj1.speed = 0
+            obj1.speedx = 0
+            collided = 1
 
     if obj1_left > obj2_left and obj1_right < obj2_right:
         #obj1 is above or below obj2
         if obj1_bottom < obj2_top:
-            #obj1 is above obj2
-            if obj1.speed[1] < 0:
+            collided = 1
+            #obj1 is hitting obj2 from above
+            if obj1.speedy < 0:
                 #prevent obj1 from falling through obj2 but let them jump
-                obj1.speed[1] = 0
-        
+                obj1.speedy = 0
+            
         if obj1_top > obj2_bottom:
-            #obj1 is below obj2
-            if obj1.speed[1] > 0:
+            #obj1 is below obj2 and hitting it from below
+            collided = 1
+            if obj1.speedy > 0:
                 #prevent obj1 from rising through obj2 but let them fall
-                obj1.speed[1] = 0
+                obj1.speedy = 0
 
-    #x collision
-    if(obj1.hitbox[0] < obj2.hitbox[0] + obj2.hitbox[2] or obj1.hitbox[0] + obj1.hitbox[2] > obj2.hitbox[0]):
-        #in the correct x range
-        if
+    return collided
+    # #x collision
+    # if(obj1.hitbox[0] < obj2.hitbox[0] + obj2.hitbox[2] or obj1.hitbox[0] + obj1.hitbox[2] > obj2.hitbox[0]):
+    #     #in the correct x range
+    #     if
     
     
-    #y collision
-        if rect[0] + rect[2] > self.hitbox[0] and rect[0] < self.hitbox[0] + self.hitbox[2]:
-            if rect[1] < self.hitbox[3]:
-                return True
-        return False
-    return collision_tuple
+    # #y collision
+    #     if rect[0] + rect[2] > self.hitbox[0] and rect[0] < self.hitbox[0] + self.hitbox[2]:
+    #         if rect[1] < self.hitbox[3]:
+    #             return True
+    #     return False
+    # return collision_tuple
