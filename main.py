@@ -2,8 +2,27 @@ import pygame
 from pygame.locals import *
 import os
 import random
-
 import classes
+import RPi.GPIO as GPIO
+import time
+import subprocess
+
+
+GPIO.setmode(GPIO.BCM)
+
+#Button setup
+#button setup
+GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 17, close to power supply
+GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 22
+GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 23
+GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 27
+GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 26
+GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 16
+
+#Button callback
+def quit_game(channel):
+    global run
+    run = False
 
 pygame.init()
 
@@ -47,6 +66,11 @@ def redrawWindow():
 
     win.blit(text, (700, 10))
     pygame.display.update()
+
+#connect buttons to callbacks
+GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game)
+#GPIO.add_event_detect(22, GPIO.FALLING, callback=pause)
+#TODO: add more buttons
 
 while run: #main game loop
     for event in pygame.event.get():
