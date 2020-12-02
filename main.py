@@ -51,10 +51,11 @@ hero = classes.character(circle, 50, 50, 50, 50, 60, 60)
 hero.speedx = 3
 hero.speedy = 10
 env1 = classes.environment(100, 300, "hot", 1)
-block = classes.obstacle(circle, 100, 50, 100, 50, 80, 80, "hot")
-all_objects = [hero, env1, block]
+#block = classes.obstacle(circle, 100, 50, 100, 50, 80, 80, "hot")
+floor = classes.obstacle(circle, 160, 120, 160, 120, 320, 10, "normal")
+all_objects = [hero, env1, floor]
 #TODO: fill all_objects with map
-disp_objects = [hero, block]
+disp_objects = [hero, floor]
 #====pygame timers and variables
 run = True
 score = 0
@@ -85,7 +86,7 @@ while run: #main game loop
     #loop through obstacles 
     for obj in disp_objects:
         #check for collision
-        #collision = classes.collide(hero,obj)
+        collision = classes.collide(hero,obj)
         #move every object based on speed
         obj.x += obj.speedx
         obj.y += obj.speedy
