@@ -24,6 +24,7 @@ class character(object):
         self.hitbox = (self.x, self.y, self.x+self.width, self.y+self.height)
 
     def draw(self, win):
+        self.hitbox = (self.x, self.y, self.x+self.width, self.y+self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
         if self.signaling:
