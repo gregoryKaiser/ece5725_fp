@@ -51,7 +51,7 @@ hero.speedx = 3
 hero.speedy = 10
 env1 = classes.environment(100, 300, "hot", 1)
 #block = classes.obstacle(circle, 100, 50, 100, 50, 80, 80, "hot")
-floor = classes.obstacle(circle, 160, 120, 160, 120, 320, 10, "normal")
+floor = classes.obstacle(circle, 0, 0, 0, 0, 320, 10, "normal")
 all_objects = [hero, env1, floor]
 #TODO: fill all_objects with map
 disp_objects = [hero, floor]
