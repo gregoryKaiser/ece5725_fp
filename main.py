@@ -37,6 +37,7 @@ win = pygame.display.set_mode((W, H))
 pygame.display.set_caption('And My Axe')
 
 hero_im = pygame.image.load("/flatboy/png/Idle (1).png")
+ground_im = pygame.image.load("Ground.png")
 
 # background image load
 # bg = pygame.image.load(os.path.join('images', 'bg.png')).convert()
@@ -51,7 +52,7 @@ hero.speedx = 0
 hero.speedy = 2
 env1 = classes.environment(100, 300, "hot", 1)
 #block = classes.obstacle(circle, 100, 50, 100, 50, 80, 80, "hot")
-floor = classes.obstacle(circle, 0, 200, 0, 200, 320, 60, "normal")
+floor = classes.obstacle(ground_im, 0, 200, 0, 200, 320, 60, "normal")
 all_objects = [hero, env1, floor]
 #TODO: fill all_objects with map
 disp_objects = [hero, floor]
