@@ -209,14 +209,14 @@ def collide(obj1, obj2):
         if obj1_bottom < obj2_top:
             collided = 1
             #obj1 is hitting obj2 from above
-            if obj1.speedy < 0:
+            if obj1.speedy > 0:
                 #prevent obj1 from falling through obj2 but let them jump
                 obj1.speedy = 0
             
         if obj1_top > obj2_bottom:
             #obj1 is below obj2 and hitting it from below
             collided = 1
-            if obj1.speedy > 0:
+            if obj1.speedy < 0:
                 #prevent obj1 from rising through obj2 but let them fall
                 obj1.speedy = 0
 
