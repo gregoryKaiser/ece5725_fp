@@ -24,11 +24,11 @@ class character(object):
         self.hitbox = (self.x, self.y, self.x+self.width, self.y+self.height)
 
     def draw(self, win):
-        self.hitbox = (self.x, self.y, self.x+self.width, self.y+self.height)
+        self.hitbox = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
         if self.signaling:
-            win.blit(self.image, (self.x, self.y+20))
+            win.blit(self.image, (self.x, self.y))
 
     def moveRight(self): #upon button press
         self.speedx = 5
@@ -125,7 +125,7 @@ class armor(item):
         if(self.picked_up):
             draw_equipped(win, hero)
         else:#draw on ground at initial position
-            self.hitbox = (self.x , self.y , self.width +self.x, self.height + self.y)
+            self.hitbox = (self.x , self.y , self.width + self.x, self.height + self.y)
             pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
             win.blit(self.image, (self.x, self.y))
 
@@ -187,13 +187,13 @@ def collide(obj1, obj2):
     # collision_tuple = (0,0)
     obj1_left = obj1.hitbox[0]
     obj1_right = obj1.hitbox[0] + obj1.hitbox[2]
-    obj1_top = obj1.hitbox[1] + obj1.hitbox[3]
-    obj1_bottom = obj1.hitbox[1]
+    obj1_bottom = obj1.hitbox[1] + obj1.hitbox[3]
+    obj1_top = obj1.hitbox[1]
 
     obj2_left = obj2.hitbox[0]
-    obj2_right = obj2.hitbox[0] + obj1.hitbox[2]
-    obj2_top = obj2.hitbox[1] + obj1.hitbox[3]
-    obj2_bottom = obj2.hitbox[1]
+    obj2_right = obj2.hitbox[0] + obj2.hitbox[2]
+    obj2_bottom = obj2.hitbox[1] + obj2.hitbox[3]
+    obj2_top = obj2.hitbox[1]
 
     collided = 0
 
@@ -201,24 +201,28 @@ def collide(obj1, obj2):
     if (obj1_right > obj2_left and obj1_left < obj2_left) or (obj1_left < obj2_right and obj1_right > obj2_right):
         if obj1_bottom < obj2_top or obj1_top > obj2_bottom:
             #obj1 is within y range of obj2
+            print("x direction collide")
             obj1.speedx = 0
             collided = 1
 
     if obj1_left > obj2_left and obj1_right < obj2_right:
-        #obj1 is above or below obj2
-        if obj1_bottom < obj2_top:
+        #obj1 is above or below obj2, bounded in x dir
+        if obj1_bottom > obj2_top and obj1_top < obj2_top:
+            print("y1 direction collide")
             collided = 1
             #obj1 is hitting obj2 from above
             if obj1.speedy > 0:
                 #prevent obj1 from falling through obj2 but let them jump
-                obj1.speedy = 0
+                obj1.speedy = -obj1.speedy
             
-        if obj1_top > obj2_bottom:
+        if obj1_top < obj2_bottom and obj1_bottom > obj2_bottom:
+            print("y direction collide")
             #obj1 is below obj2 and hitting it from below
             collided = 1
             if obj1.speedy < 0:
                 #prevent obj1 from rising through obj2 but let them fall
                 obj1.speedy = 0
+                
 
     return collided
     # #x collision
