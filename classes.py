@@ -21,10 +21,10 @@ class character(object):
         self.defense = 0
         self.signaling = 0
         self.physics_on = 2
-        self.hitbox = (self.x, self.y, self.x+self.width, self.y+self.height)
+        self.hitbox = (self.x, self.y, self.x+self.width, self.height - self.y)
 
     def draw(self, win):
-        self.hitbox = (self.x, self.y, self.width, self.height)
+        self.hitbox = (self.x, self.y, self.width + self.x, self.height - self.y)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
         if self.signaling:
