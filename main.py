@@ -37,7 +37,9 @@ win = pygame.display.set_mode((W, H))
 pygame.display.set_caption('And My Axe')
 
 hero_im = pygame.image.load("staticBoy.png")
+hero_im = pygame.transform.scale(hero_im,(50,50))
 ground_im = pygame.image.load("Ground.png")
+ground_im = pygame.transform.scale(ground_im, (320, 40))
 
 # background image load
 # bg = pygame.image.load(os.path.join('images', 'bg.png')).convert()
