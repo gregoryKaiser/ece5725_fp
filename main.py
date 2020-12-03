@@ -47,8 +47,8 @@ clock = pygame.time.Clock()
 
 #====Create game objects====
 hero = classes.character(circle, 50, 50, 50, 50, 60, 60)
-hero.speedx = 3
-hero.speedy = 10
+hero.speedx = 0
+hero.speedy = 5
 env1 = classes.environment(100, 300, "hot", 1)
 #block = classes.obstacle(circle, 100, 50, 100, 50, 80, 80, "hot")
 floor = classes.obstacle(circle, 0, 200, 0, 200, 320, 10, "normal")

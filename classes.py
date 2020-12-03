@@ -21,9 +21,10 @@ class character(object):
         self.defense = 0
         self.signaling = 0
         self.physics_on = 2
-        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        self.hitbox = (self.x, self.y, self.x+self.width, self.y+self.height)
 
     def draw(self, win):
+        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
         if self.signaling:
             win.blit(self.image, (self.x, self.y+20))
@@ -85,7 +86,7 @@ class item(object):
         self.equippable = equippable
         self.picked_up = False
         self.image = image
-        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        self.hitbox = (self.x, self.y, self.x + self.width, self.y + self.height)
         self.physics_on = 1
 
     def draw(self, win):
@@ -123,7 +124,7 @@ class armor(item):
         if(self.picked_up):
             draw_equipped(win, hero)
         else:#draw on ground at initial position
-            self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+            self.hitbox = (self.x , self.y , self.width +self.x, self.height + self.y)
             pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
             win.blit(self.image, (self.x, self.y))
 
@@ -172,7 +173,7 @@ class obstacle(object):
         self.speedy = 0 #always zero
         self.type = env_type
         self.image = image
-        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        self.hitbox = (self.x, self.y, self.x + self.width, self.y + self.height)
         self.physics_on = 0
 
     def draw(self, win):
@@ -196,7 +197,7 @@ def collide(obj1, obj2):
     collided = 0
 
     #collision code 
-    if (obj1_right > obj2_left and obj1_left < obj2_left) or (obj1_left < obj2_right and obj1_right > obj2_right):
+    if (obj1_right > bj2_left and obj1_left < obj2_left) or (obj1_left < obj2_right and obj1_right > obj2_right):
         if obj1_bottom < obj2_top or obj1_top > obj2_bottom:
             #obj1 is within y range of obj2
             obj1.speedx = 0
