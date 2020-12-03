@@ -20,7 +20,7 @@ class character(object):
         self.attack = 0
         self.defense = 0
         self.signaling = 0
-
+        self.physics_on = 2
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
 
     def draw(self, win):
@@ -86,6 +86,7 @@ class item(object):
         self.picked_up = False
         self.image = image
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        self.physics_on = 1
 
     def draw(self, win):
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
@@ -151,6 +152,7 @@ class environment(object):
         self.effect_length = effect_length
         self.type = env_type
         self.attack = attack
+        self.physics_on = 0
     
     def do_harm(self, hero):
         #not sure whether to do location check here or in main??
@@ -171,6 +173,7 @@ class obstacle(object):
         self.type = env_type
         self.image = image
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        self.physics_on = 0
 
     def draw(self, win):
         self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)

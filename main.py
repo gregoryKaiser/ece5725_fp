@@ -8,15 +8,14 @@ import time
 import subprocess
 
 #TFT stuff
-os.putenv('SDL_VIDEODRIVER','fbcon')
-os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
-os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
-os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
+# os.putenv('SDL_VIDEODRIVER','fbcon')
+# os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+# os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
+# os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
 GPIO.setmode(GPIO.BCM)
 
 #Button setup
-#button setup
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 17, close to power supply
 GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 22
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 23
@@ -91,7 +90,8 @@ while run: #main game loop
         obj.x += obj.speedx
         obj.y += obj.speedy
         #gravity
-        obj.speedy -= 1
+        if obj.physics_on==1:
+            obj.speedy -= 1
     clock.tick(40)
     win.fill(BLACK)
     redrawWindow()
