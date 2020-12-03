@@ -49,7 +49,7 @@ ground_im = pygame.transform.scale(ground_im, (320, 40))
 clock = pygame.time.Clock()
 
 #====Create game objects====
-hero = classes.character(hero_im, 50, 50, 50, 50, 60, 60)
+hero = classes.character(hero_im, 50, 50, 50, 50, 25, 50)
 hero.speedx = 0
 hero.speedy = 2
 env1 = classes.environment(100, 300, "hot", 1)
