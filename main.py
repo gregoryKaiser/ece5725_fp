@@ -13,7 +13,7 @@ os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
 os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
 os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
-# GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BCM)
 
 #Button setup
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 17, close to power supply
@@ -36,7 +36,7 @@ BLACK = 0,0,0
 win = pygame.display.set_mode((W, H))
 pygame.display.set_caption('And My Axe')
 
-hero_im = pygame.image.load("/flatboy/png/Idle (1).png")
+hero_im = pygame.image.load("staticBoy.png")
 ground_im = pygame.image.load("Ground.png")
 
 # background image load
