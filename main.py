@@ -36,7 +36,7 @@ BLACK = 0,0,0
 win = pygame.display.set_mode((W, H))
 pygame.display.set_caption('And My Axe')
 
-circle = pygame.image.load("circle.png")
+hero_im = pygame.image.load("/flatboy/png/Idle (1).png")
 
 # background image load
 # bg = pygame.image.load(os.path.join('images', 'bg.png')).convert()
@@ -46,7 +46,7 @@ circle = pygame.image.load("circle.png")
 clock = pygame.time.Clock()
 
 #====Create game objects====
-hero = classes.character(circle, 50, 50, 50, 50, 60, 60)
+hero = classes.character(hero_im, 50, 50, 50, 50, 60, 60)
 hero.speedx = 0
 hero.speedy = 2
 env1 = classes.environment(100, 300, "hot", 1)
