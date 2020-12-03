@@ -91,7 +91,7 @@ class item(object):
         self.physics_on = 1
 
     def draw(self, win):
-        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        self.hitbox = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
 
@@ -178,7 +178,7 @@ class obstacle(object):
         self.physics_on = 0
 
     def draw(self, win):
-        self.hitbox = (self.x, self.y, self.width + self.x, self.y - self.height)
+        self.hitbox = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
 
