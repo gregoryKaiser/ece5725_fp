@@ -84,11 +84,11 @@ while run: #main game loop
             run = False
     #loop through obstacles 
     for obj in disp_objects:
-        #check for collision
-        collision = classes.collide(hero,obj)
         #move every object based on speed
         obj.x += obj.speedx
         obj.y += obj.speedy
+        #check for collision
+        collision = classes.collide(hero,obj)
         #gravity
         if obj.physics_on==1:
             obj.speedy -= 1
