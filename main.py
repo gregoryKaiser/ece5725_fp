@@ -104,7 +104,7 @@ def redrawWindow():
 #connect buttons to callbacks
 GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game)
 GPIO.add_event_detect(23, GPIO.BOTH, callback=move_hero_left, bouncetime=100)
-GPIO.add_event_detect(22, GPIO.FALLING, callback=move_hero_right, bouncetime=10)
+GPIO.add_event_detect(27, GPIO.BOTH, callback=move_hero_right, bouncetime=100)
 
 
 #TODO: add more buttons
