@@ -114,6 +114,8 @@ while run: #main game loop
         if event.type == pygame.QUIT:
             pygame.quit()
             run = False
+        if event.type is MOUSEBUTTONDOWN:
+            hero.jump()
     #loop through obstacles 
     for obj in disp_objects:
         #move every object based on speed
