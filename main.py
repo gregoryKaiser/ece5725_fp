@@ -28,6 +28,15 @@ def quit_game(channel):
     global run
     run = False
 
+def move_hero_left(channel):
+    global hero
+    hero.moveLeft()
+
+def move_hero_right(channel):
+    global hero
+    hero.moveRight()
+
+
 pygame.init()
 
 W, H = 320, 240
