@@ -23,6 +23,8 @@ GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 27
 GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 26
 GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 16
 
+move_l_toggle = 0
+move_r_toggle = 0
 #Button callback
 def quit_game(channel):
     global run
@@ -30,11 +32,26 @@ def quit_game(channel):
 
 def move_hero_left(channel):
     global hero
-    hero.moveLeft()
+    global move_l_toggle
+    if move_l_toggle == 0:
+        move_l_toggle = 1
+        hero.moveLeft()
+        
+    else:
+        move_l_toggle = 0
+        hero.speedx = 0
+
 
 def move_hero_right(channel):
     global hero
-    hero.moveRight()
+    global move_r_toggle
+    if move_r_toggle == 0:
+        move_r_toggle = 1
+        hero.moveRight()
+    else:
+        move_r_toggle = 0
+        hero.speedx = 0
+
 
 
 pygame.init()
@@ -86,7 +103,10 @@ def redrawWindow():
 
 #connect buttons to callbacks
 GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game)
-#GPIO.add_event_detect(22, GPIO.FALLING, callback=pause)
+GPIO.add_event_detect(23, GPIO.BOTH, callback=move_hero_right)
+GPIO.add_event_detect(27, GPIO.FALLING, callback=move_hero_left)
+
+
 #TODO: add more buttons
 
 while run: #main game loop
