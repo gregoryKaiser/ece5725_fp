@@ -136,6 +136,7 @@ while run: #main game loop
     win.fill(BLACK)
     redrawWindow()
             
+GPIO.cleanup()
 
 
 
