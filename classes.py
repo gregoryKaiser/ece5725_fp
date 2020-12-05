@@ -74,7 +74,7 @@ armor: any item that provides defense
 
 class item(object):
 
-    def __init__(self, name, image, x, y, global_x, global_y, width, height, equippable):
+    def __init__(self, image, name, x, y, global_x, global_y, width, height, equippable):
         self.name = name
         self.x = x
         self.y = y
