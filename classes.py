@@ -126,7 +126,7 @@ class armor(item):
             pass
         #    draw_equipped(win, hero)
         else:#draw on ground at initial position
-            self.hitbox = (self.x , self.y , self.width + self.x, self.height + self.y)
+            self.hitbox = (self.x , self.y , self.width, self.height)
             pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
             win.blit(self.image, (self.x, self.y))
 
@@ -208,34 +208,66 @@ def collide(obj1, obj2):
         if obj1_top > obj2_top and obj1_bottom < obj2_bottom:
             #obj1 is within y range of obj2
             # print("x direction collide")
-            obj1.speedx = 0
-            obj1.x = obj2_left - obj1.width - 1
-            collided = 1
+            if (obj1.physics_on > 0):
+                obj1.speedx = 0
+                obj1.x = obj2_left - obj1.width - 1
+                collided = 1
+            
+            if (obj2.physics_on > 0):
+                obj2.speedx = 0
+                collided = 1
+
+
         elif obj1_bottom > obj2_top and obj1_top < obj2_top:
-            obj1.speedx = 0
-            obj1.x = obj2_left - obj1.width - 1
-            collided = 1
+            if (obj1.physics_on > 0):
+                obj1.speedx = 0
+                obj1.x = obj2_left - obj1.width - 1
+                collided = 1
+            if (obj2.physics_on > 0):
+                obj2.speedx = 0
+                collided = 1
+
+
         elif obj1_top < obj2_bottom and obj1_bottom > obj2_bottom:
-            obj1.speedx = 0
-            obj1.x = obj2_left - obj1.width - 1
-            collided = 1
+            if (obj1.physics_on > 0):
+                obj1.speedx = 0
+                obj1.x = obj2_left - obj1.width - 1
+                collided = 1
+            if (obj2.physics_on > 0):
+                obj2.speedx = 0
+                collided = 1
+
     #approach from right
     if (obj1_left < obj2_right and obj1_right > obj2_right):
         #fully enveloped case 
         if obj1_top > obj2_top and obj1_bottom < obj2_bottom:
             #obj1 is within y range of obj2
             # print("x direction collide")
-            obj1.speedx = 0
-            obj1.x = obj2_right + 1
-            collided = 1
+            if (obj1.physics_on > 0):
+                obj1.speedx = 0
+                obj1.x = obj2_right + 1
+                collided = 1
+            if (obj2.physics_on > 0):
+                obj2.speedx = 0
+                collided = 1
+
         elif obj1_bottom > obj2_top and obj1_top < obj2_top:
-            obj1.speedx = 0
-            obj1.x = obj2_right + 1
-            collided = 1
+            if (obj1.physics_on > 0):
+                obj1.speedx = 0
+                obj1.x = obj2_right + 1
+                collided = 1
+            if (obj2.physics_on > 0):
+                obj2.speedx = 0
+                collided = 1
+            
         elif obj1_top < obj2_bottom and obj1_bottom > obj2_bottom:
-            obj1.speedx = 0
-            obj1.x = obj2_right + 1
-            collided = 1
+            if (obj1.physics_on > 0):
+                obj1.speedx = 0
+                obj1.x = obj2_right + 1
+                collided = 1
+            if (obj2.physics_on > 0):
+                obj2.speedx = 0
+                collided = 1
 
     if obj1_left > obj2_left and obj1_right < obj2_right:
         #obj1 is above or below obj2, bounded in x dir
@@ -243,18 +275,28 @@ def collide(obj1, obj2):
             # print("y1 direction collide")
             collided = 1
             #obj1 is hitting obj2 from above
-            if obj1.speedy > 0:
-                #prevent obj1 from falling through obj2 but let them jump
-                obj1.speedy = 0
-                obj1.y = -obj1.height+obj2_top-1
+            if (obj1.physics_on > 0):
+                if obj1.speedy > 0:
+                    #prevent obj1 from falling through obj2 but let them jump
+                    obj1.speedy = 0
+                    obj1.y = -obj1.height+obj2_top-1
+            if (obj2.physics_on > 0):
+                if obj2.speedy > 0:
+                    obj2.speedy = 0
             
         if obj1_top < obj2_bottom and obj1_bottom > obj2_bottom:
             # print("y direction collide")
             #obj1 is below obj2 and hitting it from below
             collided = 1
             if obj1.speedy < 0:
+                if (obj1.physics_on > 0):
                 #prevent obj1 from rising through obj2 but let them fall
-                obj1.speedy = 0
+                    obj1.speedy = 0
+            if obj2.speedy < 0:
+                if (obj2.physics_on > 0):
+                #prevent obj1 from rising through obj2 but let them fall
+                    obj2.speedy = 0
+                
                 
 
     return collided
