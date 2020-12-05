@@ -82,7 +82,7 @@ hero.speedx = 0
 hero.speedy = 2
 
 env1 = classes.environment(100, 300, "hot", 1)
-block = classes.obstacle(circle_im, 200, 150, 200, 150, 100, 100, "hot")
+block = classes.obstacle(circle_im, 200, 130, 200, 130, 100, 100, "hot")
 floor = classes.obstacle(ground_im, 0, 200, 0, 200, 320, 15, "normal")
 
 all_objects = [hero, env1, floor, block]
