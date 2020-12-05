@@ -37,7 +37,7 @@ class character(object):
         self.speedx = -5
 
     def jump(self): #upon button press
-        self.speedy = -10
+        self.speedy = -20
 
     def stopMoving(self): #upon button release
         self.speedx = 0

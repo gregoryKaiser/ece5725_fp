@@ -66,6 +66,8 @@ hero_im = pygame.image.load("staticBoy.png")
 hero_im = pygame.transform.scale(hero_im,(50,50))
 ground_im = pygame.image.load("Ground.png")
 ground_im = pygame.transform.scale(ground_im, (320, 40))
+circle_im = pygame.image.load("circle.png")
+circle_im = pygame.transform.scale(circle_im, (30,10))
 
 # background image load
 # bg = pygame.image.load(os.path.join('images', 'bg.png')).convert()
@@ -78,9 +80,11 @@ clock = pygame.time.Clock()
 hero = classes.character(hero_im, 50, 50, 50, 50, 25, 50)
 hero.speedx = 0
 hero.speedy = 2
+
 env1 = classes.environment(100, 300, "hot", 1)
-#block = classes.obstacle(circle, 100, 50, 100, 50, 80, 80, "hot")
+block = classes.obstacle(circle_im, 100, 150, 100, 200, 30, 10, "hot")
 floor = classes.obstacle(ground_im, 0, 200, 0, 200, 320, 15, "normal")
+
 all_objects = [hero, env1, floor]
 #TODO: fill all_objects with map
 disp_objects = [hero, floor]
