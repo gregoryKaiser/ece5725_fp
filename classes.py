@@ -216,6 +216,7 @@ def collide(obj1, obj2):
             obj1.speedx = 0
             obj1.x = obj2_left + 1
             collided = 1
+        """
         elif obj1_bottom > obj2_top and obj1_top < obj2_top:
             obj1.speedx = 0
             obj1.x = obj2_left + 1
@@ -224,6 +225,7 @@ def collide(obj1, obj2):
             obj1.speedx = 0
             obj1.x = obj2_left + 1
             collided = 1
+        """
 
     if obj1_left > obj2_left and obj1_right < obj2_right:
         #obj1 is above or below obj2, bounded in x dir
