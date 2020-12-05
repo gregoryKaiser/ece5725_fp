@@ -209,7 +209,7 @@ def collide(obj1, obj2):
             obj1.speedx = 0
             obj1.x = obj2_left + 1
             collided = 1
-         elif obj1_bottom > obj2_top and obj1_top < obj2_top:
+        elif obj1_bottom > obj2_top and obj1_top < obj2_top:
             obj1.speedx = 0
             obj1.x = obj2_left + 1
             collided = 1
