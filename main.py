@@ -111,7 +111,7 @@ def drop_item(channel):
     global disp_objects
     shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "chest")
     shirt.speedx = -5
-    disp_objects.append[shirt]
+    disp_objects.append(shirt)
 
 #connect buttons to callbacks
 GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game)
