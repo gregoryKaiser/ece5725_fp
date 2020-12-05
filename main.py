@@ -17,7 +17,7 @@ GPIO.setmode(GPIO.BCM)
 
 #Button setup
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 17, close to power supply
-GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 22
+GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 22 signal
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 23
 GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 27
 GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 26
@@ -67,6 +67,7 @@ hero_im = pygame.transform.scale(hero_im,(50,50))
 ground_im = pygame.image.load("Ground.png")
 ground_im = pygame.transform.scale(ground_im, (320, 40))
 circle_im = pygame.image.load("circle.png")
+circle_im2 = pygame.transform.scale(circle_im, (30,30))
 circle_im = pygame.transform.scale(circle_im, (100,100))
 
 # background image load
@@ -105,10 +106,18 @@ def redrawWindow():
     win.blit(text, (700, 10))
     pygame.display.update()
 
+def drop_item(channel):
+    global all_objects
+    global disp_objects
+    shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "chest")
+    shirt.speedx = -5
+    disp_objects.append[shirt]
+
 #connect buttons to callbacks
 GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game)
 GPIO.add_event_detect(23, GPIO.BOTH, callback=move_hero_left, bouncetime=100)
 GPIO.add_event_detect(27, GPIO.BOTH, callback=move_hero_right, bouncetime=100)
+GPIO.add_event_detect(22, GPIO.FALLING, callback = drop_item)
 
 
 #TODO: add more buttons
@@ -121,7 +130,9 @@ while run: #main game loop
         if event.type is MOUSEBUTTONDOWN:
             hero.jump()
     #loop through obstacles 
-    for obj in disp_objects:
+
+    for i in range(len(disp_objects)):
+        obj = disp_objects[i]
         #move every object based on speed
         obj.x += obj.speedx
         obj.y += obj.speedy
@@ -129,58 +140,29 @@ while run: #main game loop
         if obj.physics_on==1:
             obj.speedy += 2
             #drag
-            # if obj.speedy>0:
-            #     obj.speedy -= 1
-            # elif obj.speedy<0:
-            #     obj.speedy += 1
+            if obj.speedy > 0:
+                obj.speedy -= 1
+            elif obj.speedy < 0:
+                obj.speedy += 1
+
+            if obj.speedx > 0:
+                obj.speedx -= 1
+            elif obj.speedx < 0:
+                obj.speedx += 1
         elif obj.physics_on==2:
             obj.speedy += 2
-
-        #check for collision
-        collision = classes.collide(hero,obj)
+        for j in range(i, len(disp_objects)):
+            obj2 = disp_objects[j]
+            if(obj.physics_on>0):
+                #check for collision
+                collision = classes.collide(obj,obj2)
+                if type(obj) == classes.item and collision == True:
+                    disp_objects.remove(obj)
+            
+        disp_objects[i] = obj
         # print(collision)
     clock.tick(40)
     win.fill(BLACK)
     redrawWindow()
             
 GPIO.cleanup()
-
-
-
-
-#main while:
-
-#if key_right
-#    set right speed
-#if key_left
-#    set left speed
-#if key_up
-#    set positive y speed
-
-#for all objects
-#   collide with character?
-#       if obstacle
-#           stop the character
-#               -sets speeds to zero
-#           do environment check
-#       else if enemy
-#           decrement health
-#       else if item
-#           pick up item
-#           if equippable:
-#               update hero params
-#           else:
-#               update hero inventory
-
-#if character at rightward limit
-#   character speed zero
-#   update background position (moves left)
-#   update global position
-#if chracter at leftward limit
-#   character speed zero
-#   update background 
-#   update global posiiotn
-#else
-#   update character position with speed (pixels/frame)
-#   update global position
-#y speed = y speed - gravity

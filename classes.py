@@ -185,6 +185,7 @@ class obstacle(object):
 
 def collide(obj1, obj2):
     #NOTE: obj1 must have a speed
+    #NOTE: some edits needed to remove slippery effect
     # collision_tuple = (0,0)
     obj1_left = obj1.hitbox[0]
     obj1_right = obj1.hitbox[0] + obj1.hitbox[2]
