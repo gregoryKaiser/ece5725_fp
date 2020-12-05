@@ -121,9 +121,10 @@ class armor(item):
         self.env_type = env_type
         self.body_location = body_location
 
-    def draw(self, win, hero):
+    def draw(self, win):
         if(self.picked_up):
-            draw_equipped(win, hero)
+            pass
+        #    draw_equipped(win, hero)
         else:#draw on ground at initial position
             self.hitbox = (self.x , self.y , self.width + self.x, self.height + self.y)
             pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
