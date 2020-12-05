@@ -87,7 +87,7 @@ floor = classes.obstacle(ground_im, 0, 200, 0, 200, 320, 15, "normal")
 
 all_objects = [hero, env1, floor]
 #TODO: fill all_objects with map
-disp_objects = [hero, floor]
+disp_objects = [hero, floor, block]
 #====pygame timers and variables
 run = True
 score = 0
