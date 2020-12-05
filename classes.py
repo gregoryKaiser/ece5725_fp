@@ -199,11 +199,22 @@ def collide(obj1, obj2):
     collided = 0
 
     #collision code 
-    if (obj1_right > obj2_left and obj1_left < obj2_left) or (obj1_left < obj2_right and obj1_right > obj2_right):
+
+    #approach from left
+    if (obj1_right > obj2_left and obj1_left < obj2_left):
+        if obj1_bottom > obj2_top or obj1_top < obj2_bottom:
+        #obj1 is within y range of obj2
+            # print("x direction collide")
+            obj1.speedx = 0
+            obj1.x = obj2_left - obj1.width - 1
+            collided = 1
+
+    if (obj1_left < obj2_right and obj1_right > obj2_right):
         if obj1_bottom > obj2_top or obj1_top < obj2_bottom:
             #obj1 is within y range of obj2
             # print("x direction collide")
             obj1.speedx = 0
+            obj1.x = obj2_left + 1
             collided = 1
 
     if obj1_left > obj2_left and obj1_right < obj2_right:
