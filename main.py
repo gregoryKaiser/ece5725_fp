@@ -8,10 +8,10 @@ import time
 import subprocess
 
 #TFT stuff
-#os.putenv('SDL_VIDEODRIVER','fbcon')
-#os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
-#os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
-#os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
+os.putenv('SDL_VIDEODRIVER','fbcon')
+os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
+os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
 GPIO.setmode(GPIO.BCM)
 
