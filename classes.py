@@ -31,10 +31,10 @@ class character(object):
             win.blit(self.image, (self.x, self.y))
 
     def moveRight(self): #upon button press
-        self.speedx = 5
+        self.speedx = 3
 
     def moveLeft(self): #upon button press
-        self.speedx = -5
+        self.speedx = -3
 
     def jump(self): #upon button press
         self.speedy = -20
