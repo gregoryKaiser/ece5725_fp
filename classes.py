@@ -178,7 +178,8 @@ class obstacle(object):
         self.physics_on = 0
 
     def draw(self, win):
-        self.hitbox = (self.x, self.y + 25, self.width, self.height)
+        #self.hitbox = (self.x, self.y + 25, self.width, self.height)
+        self.hitbox = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
 

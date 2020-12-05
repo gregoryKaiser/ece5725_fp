@@ -8,10 +8,10 @@ import time
 import subprocess
 
 #TFT stuff
-os.putenv('SDL_VIDEODRIVER','fbcon')
-os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
-os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
-os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
+#os.putenv('SDL_VIDEODRIVER','fbcon')
+#os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+#os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
+#os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
 GPIO.setmode(GPIO.BCM)
 
@@ -67,7 +67,7 @@ hero_im = pygame.transform.scale(hero_im,(50,50))
 ground_im = pygame.image.load("Ground.png")
 ground_im = pygame.transform.scale(ground_im, (320, 40))
 circle_im = pygame.image.load("circle.png")
-circle_im = pygame.transform.scale(circle_im, (30,10))
+circle_im = pygame.transform.scale(circle_im, (60,15))
 
 # background image load
 # bg = pygame.image.load(os.path.join('images', 'bg.png')).convert()
@@ -82,10 +82,10 @@ hero.speedx = 0
 hero.speedy = 2
 
 env1 = classes.environment(100, 300, "hot", 1)
-block = classes.obstacle(circle_im, 100, 150, 100, 200, 30, 10, "hot")
+block = classes.obstacle(circle_im, 200, 185, 200, 185, 60, 15, "hot")
 floor = classes.obstacle(ground_im, 0, 200, 0, 200, 320, 15, "normal")
 
-all_objects = [hero, env1, floor]
+all_objects = [hero, env1, floor, block]
 #TODO: fill all_objects with map
 disp_objects = [hero, floor, block]
 #====pygame timers and variables
