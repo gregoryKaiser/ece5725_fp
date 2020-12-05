@@ -55,7 +55,7 @@ def move_hero_right(channel):
 
 
 pygame.init()
-
+pygame.mouse.set_visible(False)
 W, H = 320, 240
 BLACK = 0,0,0
 #win = pygame.screen?
@@ -131,7 +131,7 @@ while run: #main game loop
             #     obj.speedy += 1
         elif obj.physics_on==2:
             obj.speedy += 2
-            
+
         #check for collision
         collision = classes.collide(hero,obj)
         # print(collision)
