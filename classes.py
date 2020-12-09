@@ -184,6 +184,60 @@ class obstacle(object):
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
 
+
+#helper function for collide
+def find_collisions(obj_list):
+    collision_list = []
+    obj_list_copy = obj_list[:]
+    #base case:
+    if len(obj_list) < 1:
+        return collision_list, no_collision_list
+
+    #select the next object to compare and remove it from the list
+    curr_obj = obj_list_copy[0]
+    obj_list_copy.remove(curr_obj)
+
+    #identify rect for obj hitbox
+    rect1 = pygame.Rect(curr_obj.hitbox)
+    collide_flag = False
+    for obj in obj_list_copy:
+        rect2 = pygame.Rect(obj.hitbox)
+        if rect1.colliderect(rect2):
+            #collsion detected; collision flag for curr_obj = True
+            #append obj to collision list
+            collision_list.append(obj)
+            obj_list_copy.remove(obj)
+            collide_flag = True
+
+    if collide_flag:
+        #curr_object collided with something; add it to the collide list
+        collision_list.append(curr_obj)
+    
+    #search the remaining obj_list for collisions:
+    return collision_list + find_collisions(obj_list_copy)
+
+        
+
+
+def collide(obj_list, dir):
+    #TODO: finish implementation using reference: http://programarcadegames.com/python_examples/show_file.php?file=platform_jumper.py
+    global disp_objects
+    collided = find_collisions(obj_list)
+    for obj in obj_list:
+        if obj in collided:
+            #object has collided with something
+            #check to see if moving left or right
+            if obj.speedx > 0:
+                #moving right; undo by bumping back left by the object's speed
+                obj.x = obj.x - obj.width
+
+
+    
+    
+
+    
+
+"""
 def collide(obj1, obj2):
     #NOTE: obj1 must have a speed
     #NOTE: some edits needed to remove slippery effect
@@ -258,6 +312,8 @@ def collide(obj1, obj2):
                 
 
     return collided
+
+    """
     # #x collision
     # if(obj1.hitbox[0] < obj2.hitbox[0] + obj2.hitbox[2] or obj1.hitbox[0] + obj1.hitbox[2] > obj2.hitbox[0]):
     #     #in the correct x range
