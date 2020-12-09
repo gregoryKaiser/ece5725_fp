@@ -191,7 +191,7 @@ def find_collisions(obj_list):
     obj_list_copy = obj_list[:]
     #base case:
     if len(obj_list) < 1:
-        return collision_list, no_collision_list
+        return collision_list
 
     #select the next object to compare and remove it from the list
     curr_obj = obj_list_copy[0]
