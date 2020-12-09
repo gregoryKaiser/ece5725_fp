@@ -121,7 +121,31 @@ GPIO.add_event_detect(22, GPIO.FALLING, callback = drop_item)
 
 
 #TODO: add more buttons
+while run: #main game loop
+    #game controls
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            run = False
+        if event.type is MOUSEBUTTONDOWN:
+            hero.jump()
+    #move everything x
+    classes.move_objs(disp_objects, 'x')
+    #check for x collisions
+    classes.collide(disp_objects, 'x')
+    #move everything y
+    classes.move_objs(disp_objects, 'y')
+    #check for y collisions
+    classes.collide(disp_objects, 'y')
+    
+    clock.tick(40)
+    win.fill(BLACK)
+    redrawWindow()
+            
+GPIO.cleanup()
 
+
+"""
 while run: #main game loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -166,3 +190,4 @@ while run: #main game loop
     redrawWindow()
             
 GPIO.cleanup()
+"""

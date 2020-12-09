@@ -220,16 +220,41 @@ def find_collisions(obj_list):
 
 
 def collide(obj_list, dir):
-    #TODO: finish implementation using reference: http://programarcadegames.com/python_examples/show_file.php?file=platform_jumper.py
-    global disp_objects
+    #TODO: add check to make objects that can be picked up by the hero picked up
     collided = find_collisions(obj_list)
     for obj in obj_list:
         if obj in collided:
-            #object has collided with something
-            #check to see if moving left or right
-            if obj.speedx > 0:
-                #moving right; undo by bumping back left by the object's speed
-                obj.x = obj.x - obj.width
+            #object has collided with something; bump back by dir speec
+            if dir == 'x':
+                obj.x -= obj.speedx
+            else:
+                obj.y -= obj.speedy
+                if obj.speedy > 0:
+                    #falling onto platform, set vertical speed to zero
+                    obj.speedy = 0
+            #update hitbox
+            obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
+            
+
+def move_objs(obj_list, dir):
+    if dir == 'x':
+        for obj in obj_list:
+            obj.x += obj.speedx
+            #update hitbox
+            obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
+    else:
+        for obj in obj_list:
+            obj.y += obj.speedy
+            #gravity
+            if obj.physics_on==1 or obj.physics_on==2:
+                obj.speedy += 2
+            #drag
+            if obj.speedy > 0:
+                obj.speedy -= 1
+            elif obj.speedy < 0:
+                obj.speedy += 1
+            #update hitbox
+            obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
 
 
     
