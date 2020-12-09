@@ -224,11 +224,11 @@ def collide(obj_list, dir):
     collided = find_collisions(obj_list)
     for obj in obj_list:
         if obj in collided:
-            #object has collided with something; bump back by dir speec
+            #object has collided with something; bump back by dir speed
             if dir == 'x':
-                obj.x -= obj.speedx
+                obj.x -= obj.speedx*2
             else:
-                obj.y -= obj.speedy
+                obj.y -= obj.speedy*2
                 if obj.speedy > 0:
                     #falling onto platform, set vertical speed to zero
                     obj.speedy = 0
