@@ -235,9 +235,11 @@ def collide(obj_list, direc):
 
             else:
                 obj.y -= obj.speedy
-                if obj.speedy > 0:
+                obj.speedy = 0
+
+                #if obj.speedy > 0:
                     #falling onto platform, set vertical speed to zero
-                    obj.speedy = 0
+                #    obj.speedy = 0
             #update hitbox
             obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
             
@@ -259,9 +261,9 @@ def move_objs(obj_list, direc):
                 obj.speedy -= 1
             elif obj.speedy < 0:
                 obj.speedy += 1
-            if obj.speedx > 0:
+            if obj.speedx > 0 and obj.physics_on == 1:
                 obj.speedx -= 1
-            elif obj.speedx < 0:
+            elif obj.speedx < 0 and obj.physics_on == 1:
                 obj.speedx += 1
             obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
             #update hitbox
