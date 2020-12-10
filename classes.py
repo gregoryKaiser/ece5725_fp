@@ -251,7 +251,6 @@ def move_objs(obj_list, direc):
     else:
         for obj in obj_list:
             obj.y += obj.speedy
-            obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
             #gravity
             if obj.physics_on==1 or obj.physics_on==2:
                 obj.speedy += 2
@@ -260,10 +259,11 @@ def move_objs(obj_list, direc):
                 obj.speedy -= 1
             elif obj.speedy < 0:
                 obj.speedy += 1
-            #if obj.speedx > 0:
-            #    obj.speedx -= 1
-            #elif obj.speedx < 0:
-            #    obj.speedx += 1
+            if obj.speedx > 0:
+                obj.speedx -= 1
+            elif obj.speedx < 0:
+                obj.speedx += 1
+            obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
             #update hitbox
             
 
