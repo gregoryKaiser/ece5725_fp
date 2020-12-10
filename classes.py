@@ -235,6 +235,12 @@ def collide(obj_list, direc):
 
             else:
                 obj.y -= obj.speedy
+                if obj.speedy != 0:
+                    if obj.speedy < 0:
+                        obj.y += obj.height
+                    elif obj.speedx > 0:
+                        #bump backward by height
+                        obj.y -= obj.height
                 obj.speedy = 0
 
                 #if obj.speedy > 0:
