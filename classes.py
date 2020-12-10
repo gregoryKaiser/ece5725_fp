@@ -234,7 +234,7 @@ def collide(obj_list, direc):
                     obj.x -= obj.width
 
             else:
-                obj.y -= obj.speedy
+                #obj.y -= obj.speedy
                 if obj.speedy != 0:
                     if obj.speedy < 0:
                         obj.y += obj.height
