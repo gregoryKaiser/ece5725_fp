@@ -219,13 +219,13 @@ def find_collisions(obj_list):
         
 
 
-def collide(obj_list, dir):
+def collide(obj_list, direc):
     #TODO: add check to make objects that can be picked up by the hero picked up
     collided = find_collisions(obj_list)
     for obj in obj_list:
         if obj in collided:
             #object has collided with something; bump back by dir speed
-            if dir == 'x':
+            if direc == 'x':
                 obj.x -= obj.speedx*2
             else:
                 obj.y -= obj.speedy*2
@@ -236,8 +236,8 @@ def collide(obj_list, dir):
             obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
             
 
-def move_objs(obj_list, dir):
-    if dir == 'x':
+def move_objs(obj_list, direc):
+    if direc == 'x':
         for obj in obj_list:
             obj.x += obj.speedx
             #update hitbox
@@ -245,6 +245,7 @@ def move_objs(obj_list, dir):
     else:
         for obj in obj_list:
             obj.y += obj.speedy
+            obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
             #gravity
             if obj.physics_on==1 or obj.physics_on==2:
                 obj.speedy += 2
@@ -258,7 +259,7 @@ def move_objs(obj_list, dir):
             #elif obj.speedx < 0:
             #    obj.speedx += 1
             #update hitbox
-            obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
+            
 
 
     
