@@ -167,7 +167,7 @@ freq = cv2.getTickFrequency()
 videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
 #=============end object detection setup===============================
-
+#==============gameplay main==================================
 GPIO.setmode(GPIO.BCM)
 
 #Button setup
@@ -196,12 +196,16 @@ def switch_state(channel):
     global GAME_STATE
     global GAME_PLAY
     global OBJ_DETECT
+    global obj_capture
     #global run
     #print("switch",GAME_STATE)
     if GAME_STATE==GAME_PLAY:
         GAME_STATE = OBJ_DETECT
     elif GAME_STATE==OBJ_DETECT:
         GAME_STATE = GAME_PLAY
+        if (not obj_capture=="none"):
+            #spawn an object
+            drop_item_noncb()
     #print("switch",GAME_STATE)
     #run=False
 
@@ -261,19 +265,30 @@ run = True
 score = 0
 # pygame.time.set_timer(USEREVENT+1, 500)
 # pygame.time.set_timer(USEREVENT+2, 3000)
+global obj_capture
+obj_capture = "none"
 
 def redrawWindow():
+    global obj_capture
     largeFont = pygame.font.SysFont('comicsans', 30)
     #win.blit(bg, (bgX, 0))
     #win.blit(bg, (bgX2,0))
     text = largeFont.render('Score: ' + str(score), 1, (255,255,255))
+    obj_text = largeFont.render(str(obj_capture), 1, (255,255,255))
     for obstacle in disp_objects:
         obstacle.draw(win)
-
-    win.blit(text, (700, 10))
+    win.blit(text, (20, 20))
+    win.blit(obj_text, (20,40))
     pygame.display.update()
 
 def drop_item(channel):
+    global all_objects
+    global disp_objects
+    shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "chest")
+    shirt.speedx = -5
+    disp_objects.append(shirt)
+
+def drop_item_noncb():
     global all_objects
     global disp_objects
     shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "chest")
@@ -285,8 +300,7 @@ GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game, bouncetime=100)
 GPIO.add_event_detect(23, GPIO.BOTH, callback=move_hero_left, bouncetime=100)
 GPIO.add_event_detect(27, GPIO.BOTH, callback=move_hero_right, bouncetime=100)
 GPIO.add_event_detect(22, GPIO.FALLING, callback = switch_state, bouncetime=100)
-
-
+#======================end gameplay setup====================================
 
 while run : #main game loop
     clock.tick(40)
@@ -297,38 +311,14 @@ while run : #main game loop
                 run = False
             if event.type is MOUSEBUTTONDOWN:
                 hero.jump()
-        #loop through obstacles 
-
-        for i in range(len(disp_objects)):
-            obj = disp_objects[i]
-            #move every object based on speed
-            obj.x += obj.speedx
-            obj.y += obj.speedy
-            #gravity
-            if obj.physics_on==1:
-                obj.speedy += 2
-                #drag
-                if obj.speedy > 0:
-                    obj.speedy -= 1
-                elif obj.speedy < 0:
-                    obj.speedy += 1
-
-                if obj.speedx > 0:
-                    obj.speedx -= 1
-                elif obj.speedx < 0:
-                    obj.speedx += 1
-            elif obj.physics_on==2:
-                obj.speedy += 2
-            for j in range(i, len(disp_objects)):
-                obj2 = disp_objects[j]
-                if(obj.physics_on>0):
-                    #check for collision
-                    collision = classes.collide(obj,obj2)
-                    if type(obj) == classes.item and collision == True:
-                        disp_objects.remove(obj)
-                
-            disp_objects[i] = obj
-            # print(collision)
+        #move everything x
+        classes.move_objs(disp_objects, 'x')
+        #check for x collisions
+        classes.collide(disp_objects, 'x')
+        #move everything y
+        classes.move_objs(disp_objects, 'y')
+        #check for y collisions
+        classes.collide(disp_objects, 'y')  
         #clock.tick(40)
         win.fill(BLACK)
         redrawWindow()
@@ -368,7 +358,6 @@ while run : #main game loop
         # Loop over all detections and draw detection box if confidence is above minimum threshold
         for i in range(len(scores)):
             if ((scores[i] > min_conf_threshold) and (scores[i] <= 1.0)):
-
                 # Get bounding box coordinates and draw box
                 # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
                 ymin = int(max(1,(boxes[i][0] * imH)))
@@ -385,7 +374,10 @@ while run : #main game loop
                 label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
                 cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
                 cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
-
+        if (len(scores)>0 and (scores[0]>min_conf_threshold)):
+            obj_capture = labels[int(classes_obj[0])]
+        else:
+            obj_capture = "none"
         # Draw framerate in corner of frame
         cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 

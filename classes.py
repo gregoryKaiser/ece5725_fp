@@ -253,6 +253,10 @@ def move_objs(obj_list, dir):
                 obj.speedy -= 1
             elif obj.speedy < 0:
                 obj.speedy += 1
+            #if obj.speedx > 0:
+            #    obj.speedx -= 1
+            #elif obj.speedx < 0:
+            #    obj.speedx += 1
             #update hitbox
             obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
 
