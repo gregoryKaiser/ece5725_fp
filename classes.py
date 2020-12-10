@@ -229,7 +229,7 @@ def collide(obj_list, direc):
                 if obj.speedx < 0:
                     #bump forward by width
                     obj.x += obj.width
-                else:
+                elif obj.speedx > 0:
                     #bump backward by width
                     obj.x -= obj.width
 
