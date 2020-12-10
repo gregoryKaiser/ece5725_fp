@@ -234,18 +234,11 @@ def collide(obj_list, direc):
                     obj.x -= obj.width
 
             else:
-                #obj.y -= obj.speedy
-                if obj.speedy != 0:
-                    if obj.speedy < 0:
-                        obj.y += obj.height
-                    elif obj.speedx > 0:
-                        #bump backward by height
-                        obj.y -= obj.height
+                obj.y -= obj.speedy
                 obj.speedy = 0
-
-                #if obj.speedy > 0:
+                if obj.speedy > 0:
                     #falling onto platform, set vertical speed to zero
-                #    obj.speedy = 0
+                    obj.speedy = 0
             #update hitbox
             obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
             
