@@ -12,11 +12,11 @@ class character(object):
         self.glob_y = glob_y
         self.width = width
         self.height = height
-        self.speedx = 0 #set high during button press
+        self.speedx = 0 #set high/low during button press
         self.speedy = 0 #set high when jumping
         self.image = image
         self.health = 100
-        self.inventory = {}
+        self.inventory = []
         self.attack = 0
         self.defense = 0
         self.signaling = 0
@@ -90,7 +90,7 @@ class item(object):
         self.hitbox = (self.x, self.y, self.x + self.width, self.y + self.height)
         self.physics_on = 1
 
-    def draw(self, win):
+    def draw(self, win, hero):
         self.hitbox = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
@@ -102,17 +102,19 @@ class weapon(item):
 
     def draw(self, win, hero):
         if(self.picked_up):
-            draw_equipped(win, hero)
+            self.draw_equipped(win, hero)
         else:
-            self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+            self.hitbox = (self.x, self.y, self.width, self.height)
             pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
             win.blit(self.image, (self.x, self.y))
 
     def draw_equipped(self, win, hero):
-        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        self.x = hero.x+self.width
+        self.y = hero.y
+        self.hitbox = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         #TODO: figure out correct location on hero to draw
-        win.blit(self.image, (hero.x + 5, hero.y + 10))
+        win.blit(self.image, (self.x, self.y))
 
 class armor(item):
     def __init__(self, image, name, x, y, global_x, global_y, width, height, equippable, defense, env_type, body_location):
@@ -124,7 +126,7 @@ class armor(item):
     def draw(self, win):
         if(self.picked_up):
             pass
-        #    draw_equipped(win, hero)
+        #    self.draw_equipped(win, hero)
         else:#draw on ground at initial position
             self.hitbox = (self.x , self.y , self.width, self.height)
             pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
@@ -208,16 +210,27 @@ def find_collisions(obj_list):
             collision_list.append(obj)
             obj_list_copy.remove(obj)
             collide_flag = True
-
+            
+            #check for item collide with hero
+            if(isinstance(curr_obj, character) and isinstance(obj,item)):
+                #remove item obj
+                #obj_list.remove(obj)
+                #print("item collision")
+                obj.picked_up = True
+                curr_obj.inventory.append(obj)
+            if(isinstance(curr_obj,item) and isinstance(obj,character)):
+                #remove item obj
+                #obj_list.remove(curr_obj)
+                #print("item collision")
+                curr_obj.picked_up = True
+                obj.inventory.append(curr_obj)
+            
     if collide_flag:
         #curr_object collided with something; add it to the collide list
         collision_list.append(curr_obj)
     
     #search the remaining obj_list for collisions:
     return collision_list + find_collisions(obj_list_copy)
-
-        
-
 
 def collide(obj_list, direc):
     #TODO: add check to make objects that can be picked up by the hero picked up
@@ -254,7 +267,8 @@ def move_objs(obj_list, direc):
             obj.y += obj.speedy
             #gravity
             if obj.physics_on==1 or obj.physics_on==2:
-                obj.speedy += 2
+                if(obj.speedy<20):
+                    obj.speedy += 2
             #drag
             if obj.speedy > 0:
                 obj.speedy -= 1

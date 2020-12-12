@@ -28,9 +28,7 @@ BLACK = 0,0,0
 win = pygame.display.set_mode((W, H))
 pygame.mouse.set_visible(False)
 
-#win = pygame.screen?
-
-pygame.display.set_caption('And My Axe')
+pygame.display.set_caption('It\'s Dangerous To Go Alone...')
 #========================object detection setup=======================
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
@@ -192,6 +190,9 @@ OBJ_DETECT = 2
 END_SCREEN = 3
 MENU_SCREEN = 4
 
+#recognizable objects taken from "lablemap.txt" in Sample_TFLite_model
+recog_obj = ["knife","scissors","apple","banana","person","bed","tv","laptop","mouse","keyboard","cell phone","book"]
+
 def switch_state(channel):
     global GAME_STATE
     global GAME_PLAY
@@ -203,7 +204,7 @@ def switch_state(channel):
         GAME_STATE = OBJ_DETECT
     elif GAME_STATE==OBJ_DETECT:
         GAME_STATE = GAME_PLAY
-        if (not obj_capture=="none"):
+        if (not obj_capture=="none" and obj_capture in recog_obj):
             #spawn an object
             drop_item_noncb()
     #print("switch",GAME_STATE)
@@ -240,7 +241,10 @@ ground_im = pygame.transform.scale(ground_im, (320, 40))
 circle_im = pygame.image.load("circle.png")
 circle_im2 = pygame.transform.scale(circle_im, (30,30))
 circle_im = pygame.transform.scale(circle_im, (100,100))
-
+brick = pygame.image.load("brick.png")
+brick = pygame.transform.scale(brick, (40,40))
+knife_im = pygame.image.load("knife.png")
+knife_im = pygame.transform.scale(knife_im,(30,30))
 # background image load
 # bg = pygame.image.load(os.path.join('images', 'bg.png')).convert()
 # bgX = 0
@@ -254,7 +258,7 @@ hero.speedx = 0
 hero.speedy = 2
 
 env1 = classes.environment(100, 300, "hot", 1)
-block = classes.obstacle(circle_im, 150, 15, 150, 15, 100, 100, "hot")
+block = classes.obstacle(brick, 150, 160, 150, 160, 40, 40, "hot")
 floor = classes.obstacle(ground_im, 0, 200, 0, 200, 320, 15, "normal")
 
 all_objects = [hero, env1, floor, block]
@@ -264,20 +268,24 @@ disp_objects = [hero, floor, block]
 run = True
 score = 0
 # pygame.time.set_timer(USEREVENT+1, 500)
-# pygame.time.set_timer(USEREVENT+2, 3000)
+pygame.time.set_timer(USEREVENT+2, 3000)
 global obj_capture
 obj_capture = "none"
 
 def redrawWindow():
     global obj_capture
+    global hero #for drawing relative to hero position
     largeFont = pygame.font.SysFont('comicsans', 30)
     #win.blit(bg, (bgX, 0))
     #win.blit(bg, (bgX2,0))
-    text = largeFont.render('Score: ' + str(score), 1, (255,255,255))
+    health_text = largeFont.render('Health: ' + str(hero.health), 1, (255,255,255))
     obj_text = largeFont.render(str(obj_capture), 1, (255,255,255))
     for obstacle in disp_objects:
-        obstacle.draw(win)
-    win.blit(text, (20, 20))
+        if isinstance(obstacle,classes.item):
+            obstacle.draw(win,hero)
+        else:
+            obstacle.draw(win)
+    win.blit(health_text, (20, 20))
     win.blit(obj_text, (20,40))
     pygame.display.update()
 
@@ -291,9 +299,15 @@ def drop_item(channel):
 def drop_item_noncb():
     global all_objects
     global disp_objects
-    shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "chest")
-    shirt.speedx = -5
-    disp_objects.append(shirt)
+    global obj_capture
+    if(obj_capture=="knife" or obj_capture=="scissors"):
+        knife = classes.weapon(knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10)
+        knife.speedx = -5
+        disp_objects.append(knife)
+    else:
+        shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "chest")
+        shirt.speedx = -5
+        disp_objects.append(shirt)
 
 #connect buttons to callbacks
 GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game, bouncetime=100)
@@ -311,6 +325,9 @@ while run : #main game loop
                 run = False
             if event.type is MOUSEBUTTONDOWN:
                 hero.jump()
+            if event.type == USEREVENT+2: #3 second timer
+                #check for environment matched to inventory??
+                hero.health -= 1
         #move everything x
         classes.move_objs(disp_objects, 'x')
         #check for x collisions
