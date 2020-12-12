@@ -191,6 +191,7 @@ class obstacle(object):
 #helper function for collide
 def find_collisions(obj_list):
     collision_list = []
+    
     obj_list_copy = obj_list[:]
     #base case:
     if len(obj_list) < 1:
@@ -214,15 +215,9 @@ def find_collisions(obj_list):
             
             #check for item collide with hero
             if(isinstance(curr_obj, character) and isinstance(obj,item)):
-                #remove item obj
-                #obj_list.remove(obj)
-                #print("item collision")
                 obj.picked_up = True
                 curr_obj.inventory.append(obj)
             if(isinstance(curr_obj,item) and isinstance(obj,character)):
-                #remove item obj
-                #obj_list.remove(curr_obj)
-                #print("item collision")
                 curr_obj.picked_up = True
                 obj.inventory.append(curr_obj)
             
@@ -239,6 +234,11 @@ def collide(obj_list, direc):
     for obj in obj_list:
         if obj in collided:
             #object has collided with something; bump back by dir speed
+            if isinstance(obj, item):
+                if not obj.equippable:
+                    if obj.picked_up:
+                        obj_list.remove(obj)
+
             if direc == 'x':
                 if obj.speedx < 0:
                     #bump forward by width
