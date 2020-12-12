@@ -205,7 +205,7 @@ def switch_state(channel):
         GAME_STATE = OBJ_DETECT
     elif GAME_STATE==OBJ_DETECT:
         GAME_STATE = GAME_PLAY
-        if (not obj_capture=="none" and obj_capture in recog_obj):
+        if (not obj_capture=="none"):# and obj_capture in recog_obj):
             #spawn an object
             drop_item_noncb()
     #print("switch",GAME_STATE)
@@ -307,7 +307,7 @@ def drop_item_noncb():
         knife.speedx = -5
         disp_objects.append(knife)
     else:
-        shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "chest")
+        shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, False, 10, "hot", "chest")
         shirt.speedx = -5
         disp_objects.append(shirt)
 
