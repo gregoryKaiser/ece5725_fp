@@ -16,8 +16,8 @@ import pygame
 from pygame.locals import *
 
 #TFT stuff
-os.putenv('SDL_VIDEODRIVER','fbcon')
-os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+#os.putenv('SDL_VIDEODRIVER','fbcon')
+#os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
 os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
 os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
@@ -192,7 +192,8 @@ MENU_SCREEN = 4
 
 #recognizable objects taken from "lablemap.txt" in Sample_TFLite_model
 recog_obj = ["knife","scissors","apple","banana","person","bed","tv","laptop","mouse","keyboard","cell phone","book"]
-
+recog_knife = ["knife", "scissors"]
+recog_fruit = ["apple","banana"]
 def switch_state(channel):
     global GAME_STATE
     global GAME_PLAY
@@ -275,6 +276,7 @@ obj_capture = "none"
 def redrawWindow():
     global obj_capture
     global hero #for drawing relative to hero position
+    #global disp_objects
     largeFont = pygame.font.SysFont('comicsans', 30)
     #win.blit(bg, (bgX, 0))
     #win.blit(bg, (bgX2,0))
@@ -395,11 +397,16 @@ while run : #main game loop
             obj_capture = labels[int(classes_obj[0])]
         else:
             obj_capture = "none"
+            
+        #rotate to align with our setup
+        frame = cv2.rotate(frame, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE)
+        
         # Draw framerate in corner of frame
         cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
         ## All the results have been drawn on the frame, so it's time to display it.
         #cv2.imshow('Object detector', frame)
+        
         cv2.imwrite('./tmp.bmp', frame) #write frame
         img = pygame.image.load('./tmp.bmp') #read frame
         win.fill((0,0,0)) #clear screen

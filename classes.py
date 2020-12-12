@@ -123,17 +123,18 @@ class armor(item):
         self.env_type = env_type
         self.body_location = body_location
 
-    def draw(self, win):
+    def draw(self, win, hero):
         if(self.picked_up):
-            pass
-        #    self.draw_equipped(win, hero)
+            self.draw_equipped(win, hero)
         else:#draw on ground at initial position
             self.hitbox = (self.x , self.y , self.width, self.height)
             pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
             win.blit(self.image, (self.x, self.y))
 
     def draw_equipped(self, win, hero):
-        self.hitbox = (self.x + 10, self.y + 5, self.width - 20, self.height - 5)
+        self.x = hero.x
+        self.y = hero.y+self.height
+        self.hitbox = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
 
         #TODO: figure out correct location on hero to draw
@@ -245,7 +246,6 @@ def collide(obj_list, direc):
                 elif obj.speedx > 0:
                     #bump backward by width
                     obj.x -= obj.width
-
             else:
                 obj.y -= obj.speedy
                 obj.speedy = 0
