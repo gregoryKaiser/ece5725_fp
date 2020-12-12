@@ -278,7 +278,7 @@ def redrawWindow():
     largeFont = pygame.font.SysFont('comicsans', 30)
     #win.blit(bg, (bgX, 0))
     #win.blit(bg, (bgX2,0))
-    health_text = largeFont.render('Health: ' + str(hero.health), 1, (255,255,255))
+    health_text = largeFont.render('Health: ' + str(hero.health), 1, (255,0,0))
     obj_text = largeFont.render(str(obj_capture), 1, (255,255,255))
     for obstacle in disp_objects:
         if isinstance(obstacle,classes.item):
