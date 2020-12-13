@@ -304,7 +304,7 @@ def drop_item_noncb():
     global obj_capture
     if(obj_capture=="knife" or obj_capture=="scissors"):
         knife = classes.weapon(knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10)
-        knife.speedx = -5
+        knife.speedx = -15
         disp_objects.append(knife)
     else:
         shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, False, 10, "hot", "chest")
