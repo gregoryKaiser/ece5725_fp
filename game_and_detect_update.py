@@ -16,8 +16,8 @@ import pygame
 from pygame.locals import *
 
 #TFT stuff
-os.putenv('SDL_VIDEODRIVER','fbcon')
-os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+#os.putenv('SDL_VIDEODRIVER','fbcon')
+#os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
 os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
 os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
@@ -269,14 +269,15 @@ clock = pygame.time.Clock()
 
 #====Create game objects====
 global hero
-hero = classes.character(hero_im, 50, 50, 50, 50, 25, 50)
+hero = classes.character(hero_im, 90, 50, 90, 50, 25, 50)
 hero.speedx = 0
 hero.speedy = 2
 
-env1 = classes.environment(100, 300, "cold", 1)
+env1 = classes.environment(100, 300, "cold", 1) #wintertime environment
 block = classes.obstacle(brick, 150, 160, 150, 160, 40, 40, "hot")
 block2 = classes.obstacle(brick, 30, 100, 30, 100, 40, 40, "hot")
-floor = classes.obstacle(ground_im, 0, 200, 0, 200, 320, 15, "normal")
+floor = classes.obstacle(ground_im, 60, 200, 60, 200, 320, 15, "normal")
+#floor2 = classes.obstacle(ground_im, -300, 200, -300, 200, 320, 15, "normal")
 
 all_objects = [hero, env1, floor, block]
 disp_objects = [hero, floor, block, block2]
@@ -291,12 +292,14 @@ obj_capture = "none"
 def redrawWindow():
     global obj_capture
     global hero #for drawing relative to hero position
-    win.blit(bg_im, (0,-140)) #background draw
+    win.blit(bg_im, (-80,-140)) #background draw
     #global disp_objects
-    largeFont = pygame.font.SysFont('comicsans', 20)
+    largeFont = pygame.font.SysFont('comicsans', 25)
+    #outerFont = pygame.font.SysFont('comicsans', 27)
     #win.blit(bg, (bgX, 0))
     #win.blit(bg, (bgX2,0))
-    health_text = largeFont.render('Health: '+str(hero.health), 1, (255,0,0))
+    health_text = largeFont.render('Health: '+str(hero.health), 1, (255,255,255))
+    #health_border = outerFont.render('Health: '+str(hero.health), 1, (255,255,255))
     hero_text = largeFont.render('Equipped: '+str(hero.env_type), 1, (255,255,255))
     env_text = largeFont.render('Current Env: '+str(env1.type), 1, (255,255,255))
     for obstacle in disp_objects:
@@ -304,9 +307,11 @@ def redrawWindow():
             obstacle.draw(win,hero)
         else:
             obstacle.draw(win)
+            
+    #win.blit(health_border, (10, 10))
     win.blit(health_text, (10, 10))
-    win.blit(env_text, (10,22))
-    win.blit(hero_text, (10,34))
+    win.blit(env_text, (10,24))
+    win.blit(hero_text, (10,36))
     
     #icon indicators for player
     win.blit(stop_im, (290,10))
@@ -356,9 +361,9 @@ while run : #main game loop
                 pygame.quit()
                 run = False
         title_font = pygame.font.SysFont('comicsans', 50)
-        color = (200,200,200)
-        title_text = title_font.render('It\'s Dangerous', 1, color)
-        title_text2 = title_font.render('to Go Alone...', 1, color)
+        color = 200,200,200
+        title_text = title_font.render('It\'s Dangerous', 1, (color))
+        title_text2 = title_font.render('to Go Alone...', 1, (color))
         win.blit(title_text, (10, 80))
         win.blit(title_text2, (10, 110))
         pygame.display.update()
@@ -398,6 +403,11 @@ while run : #main game loop
                     hero.health -= 1
         #check for end state
         if(hero.health<=0 or hero.y>=340):
+            #remove all of the hero's assets
+            for item in hero.inventory:
+                if item.equippable:
+                    disp_objects.remove(item)
+            #remove the hero itself
             disp_objects.remove(hero)
             all_objects.remove(hero)
             GAME_STATE = END_SCREEN

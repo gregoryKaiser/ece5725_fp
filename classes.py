@@ -112,8 +112,8 @@ class weapon(item):
             win.blit(self.image, (self.x, self.y))
 
     def draw_equipped(self, win, hero):
-        self.x = hero.x+self.width
-        self.y = hero.y
+        self.x = hero.x+int(self.width/2)
+        self.y = hero.y+4
         self.hitbox = (self.x, self.y, self.width, self.height)
         #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         #TODO: figure out correct location on hero to draw
