@@ -18,8 +18,12 @@ class Server:
     
     def connect(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.bind((self.HOST, self.PORT))
+        try:
+            self.s.bind((self.HOST, self.PORT))
+        except socket.error as e:
+            print(str(e))
         self.s.listen(1)
+        print("Waiting for a connection")
         self.conn, self.addr = self.s.accept()
         print( "Connected by: ", self.addr)
         return self.conn, self.addr
@@ -32,6 +36,18 @@ class Server:
     def close_connection(self):
         self.conn.close()
 
+hostname = 'localhost'
+port = 50007
+server = Server(hostname, port)
+server.connect()
 
+while(True):
+    try:
+        data_unpack = server.get_data()
+        print('Data recieved:',data_unpack)
+    except:
+        print("Closing connection")
+        server.close_connection()
+        break
 
 
