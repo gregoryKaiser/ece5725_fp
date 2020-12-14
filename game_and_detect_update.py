@@ -252,6 +252,17 @@ apple_im = pygame.image.load("apple.png")
 apple_im = pygame.transform.scale(apple_im,(30,30))
 armor_im = pygame.image.load("armor.png")
 armor_im = pygame.transform.scale(armor_im,(15,15))
+#images for the side buttons
+stop_im = pygame.image.load("stop.png")
+stop_im = pygame.transform.scale(stop_im,(20,20))
+left_im = pygame.image.load("left_arrow.png")
+left_im = pygame.transform.scale(left_im,(20,20))
+right_im = pygame.image.load("right_arrow.png")
+right_im = pygame.transform.scale(right_im,(20,20))
+camera_im = pygame.image.load("camera.png")
+camera_im = pygame.transform.scale(camera_im,(20,20))
+#background
+bg_im = pygame.image.load("background.png")
 #image assets above-------------------------------
 
 clock = pygame.time.Clock()
@@ -280,6 +291,7 @@ obj_capture = "none"
 def redrawWindow():
     global obj_capture
     global hero #for drawing relative to hero position
+    win.blit(bg_im, (0,0)) #background draw
     #global disp_objects
     largeFont = pygame.font.SysFont('comicsans', 20)
     #win.blit(bg, (bgX, 0))
@@ -297,6 +309,10 @@ def redrawWindow():
     win.blit(hero_text, (10,34))
     
     #icon indicators for player
+    win.blit(stop_im, (300,10))
+    win.blit(left_im, (300,70))
+    win.blit(right_im, (300,130))
+    win.blit(camera_im, (300,190))
     
     
     pygame.display.update()
