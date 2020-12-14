@@ -402,7 +402,7 @@ while run : #main game loop
                 if((not env1.type=="none") and (not env1.type==hero.env_type)):
                     hero.health -= 1
         #check for end state
-        if(hero.health<=0 or hero.y>=340):
+        if(hero.health<=0 or hero.y>=280):
             #remove all of the hero's assets
             for item in hero.inventory:
                 if item.equippable:
