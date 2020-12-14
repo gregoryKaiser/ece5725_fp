@@ -184,16 +184,18 @@ def quit_game(channel):
     run = False
 
 #finite state machine
-GAME_STATE = 1
+GAME_STATE = 4
 GAME_PLAY = 1
 OBJ_DETECT = 2
 END_SCREEN = 3
 MENU_SCREEN = 4
 
 #recognizable objects taken from "lablemap.txt" in Sample_TFLite_model
-recog_obj = ["knife","scissors","apple","banana","person","bed","tv","laptop","mouse","keyboard","cell phone","book"]
+#recog_obj = ["knife","scissors","apple","banana","person","bed","tv","laptop","mouse","keyboard","cell phone","book"]
 recog_knife = ["knife", "scissors"]
-recog_fruit = ["apple","banana"]
+recog_fruit = ["apple","banana","bed","person"]
+recog_armor = ["umbrella","backpack","tie"]
+
 def switch_state(channel):
     global GAME_STATE
     global GAME_PLAY
@@ -234,7 +236,7 @@ def move_hero_right(channel):
         hero.speedx = 0
 
 
-
+#image assets-------------------------------
 hero_im = pygame.image.load("staticBoy.png")
 hero_im = pygame.transform.scale(hero_im,(50,50))
 ground_im = pygame.image.load("Ground.png")
@@ -246,55 +248,63 @@ brick = pygame.image.load("brick.png")
 brick = pygame.transform.scale(brick, (40,40))
 knife_im = pygame.image.load("knife.png")
 knife_im = pygame.transform.scale(knife_im,(30,30))
-# background image load
-# bg = pygame.image.load(os.path.join('images', 'bg.png')).convert()
-# bgX = 0
-# bgX2 = bg.get_width()
+apple_im = pygame.image.load("apple.png")
+apple_im = pygame.transform.scale(apple_im,(30,30))
+armor_im = pygame.image.load("armor.png")
+armor_im = pygame.transform.scale(armor_im,(15,15))
+#image assets above-------------------------------
 
 clock = pygame.time.Clock()
 
 #====Create game objects====
+global hero
 hero = classes.character(hero_im, 50, 50, 50, 50, 25, 50)
 hero.speedx = 0
 hero.speedy = 2
 
-env1 = classes.environment(100, 300, "hot", 1)
+env1 = classes.environment(100, 300, "cold", 1)
 block = classes.obstacle(brick, 150, 160, 150, 160, 40, 40, "hot")
+block2 = classes.obstacle(brick, 30, 100, 30, 100, 40, 40, "hot")
 floor = classes.obstacle(ground_im, 0, 200, 0, 200, 320, 15, "normal")
 
 all_objects = [hero, env1, floor, block]
-#TODO: fill all_objects with map
-disp_objects = [hero, floor, block]
-#====pygame timers and variables
+disp_objects = [hero, floor, block, block2]
+#====pygame timers and variables===
 run = True
 score = 0
 # pygame.time.set_timer(USEREVENT+1, 500)
 pygame.time.set_timer(USEREVENT+2, 3000)
-global obj_capture
+global obj_capture #stores the last recognized object in the camera frame
 obj_capture = "none"
 
 def redrawWindow():
     global obj_capture
     global hero #for drawing relative to hero position
     #global disp_objects
-    largeFont = pygame.font.SysFont('comicsans', 30)
+    largeFont = pygame.font.SysFont('comicsans', 20)
     #win.blit(bg, (bgX, 0))
     #win.blit(bg, (bgX2,0))
     health_text = largeFont.render('Health: ' + str(hero.health), 1, (255,0,0))
-    obj_text = largeFont.render(str(obj_capture), 1, (255,255,255))
+    hero_text = largeFont.render('Hero:'+str(hero.env_type), 1, (255,255,255))
+    env_text = largeFont.render('Current Env:'+str(env1.type), 1, (255,255,255))
     for obstacle in disp_objects:
         if isinstance(obstacle,classes.item):
             obstacle.draw(win,hero)
         else:
             obstacle.draw(win)
-    win.blit(health_text, (20, 20))
-    win.blit(obj_text, (20,40))
+    win.blit(health_text, (10, 10))
+    win.blit(env_text, (10,22))
+    win.blit(hero_text, (10,34))
+    
+    #icon indicators for player
+    
+    
     pygame.display.update()
 
 def drop_item(channel):
     global all_objects
     global disp_objects
-    shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "chest")
+    shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, True, 10, "hot", "torso")
     shirt.speedx = -5
     disp_objects.append(shirt)
 
@@ -302,13 +312,17 @@ def drop_item_noncb():
     global all_objects
     global disp_objects
     global obj_capture
-    if(obj_capture=="knife" or obj_capture=="scissors"):
+    if(obj_capture in recog_knife):
         knife = classes.weapon(knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10)
-        knife.speedx = -15
+        knife.speedx = -10
         disp_objects.append(knife)
-    else:
-        shirt = classes.armor(circle_im2, "shirt", 310, 50, 310, 50, 30, 30, False, 10, "hot", "chest")
-        shirt.speedx = -5
+    elif(obj_capture in recog_fruit):
+        apple = classes.item(apple_im, "apple", 310, 50, 310, 50, 30, 30, False)
+        apple.speedx = -10
+        disp_objects.append(apple)
+    elif(obj_capture in recog_armor):
+        shirt = classes.armor(armor_im, "armor", 310, 50, 310, 50, 15, 15, True, 10, "cold", "torso")
+        shirt.speedx = -10
         disp_objects.append(shirt)
 
 #connect buttons to callbacks
@@ -320,7 +334,42 @@ GPIO.add_event_detect(22, GPIO.FALLING, callback = switch_state, bouncetime=100)
 
 while run : #main game loop
     clock.tick(40)
-    if GAME_STATE==GAME_PLAY:
+    if GAME_STATE==MENU_SCREEN:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                run = False
+        title_font = pygame.font.SysFont('comicsans', 50)
+        color = (200,200,200)
+        title_text = title_font.render('It\'s Dangerous', 1, color)
+        title_text2 = title_font.render('to Go Alone...', 1, color)
+        win.blit(title_text, (10, 120))
+        win.blit(title_text2, (10, 150))
+        pygame.display.update()
+        time.sleep(3)
+        GAME_STATE = GAME_PLAY
+    elif GAME_STATE==END_SCREEN:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                run = False
+        win.fill((BLACK))
+        end_font = pygame.font.SysFont('comicsans', 50)
+        end_text = end_font.render('You Died', 1, (255,0,0))
+        win.blit(end_text, (60, 120))
+        pygame.display.update()
+        time.sleep(3)
+        win.fill((BLACK))
+        pygame.display.update()
+        time.sleep(3)
+        #reset hero
+        hero = classes.character(hero_im, 50, 50, 50, 50, 25, 50)
+        hero.speedx = 0
+        hero.speedy = 2
+        disp_objects.append(hero)
+        all_objects.append(hero)
+        GAME_STATE = MENU_SCREEN
+    elif GAME_STATE==GAME_PLAY:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -328,8 +377,14 @@ while run : #main game loop
             if event.type is MOUSEBUTTONDOWN:
                 hero.jump()
             if event.type == USEREVENT+2: #3 second timer
-                #check for environment matched to inventory??
-                hero.health -= 1
+                #check for environment matched
+                if((not env1.type=="none") and (not env1.type==hero.env_type)):
+                    hero.health -= 1
+        #check for end state
+        if(hero.health<=0 or hero.y>=340):
+            disp_objects.remove(hero)
+            all_objects.remove(hero)
+            GAME_STATE = END_SCREEN
         #move everything x
         classes.move_objs(disp_objects, 'x')
         #check for x collisions
@@ -342,6 +397,7 @@ while run : #main game loop
         win.fill(BLACK)
         redrawWindow()
     elif GAME_STATE==OBJ_DETECT:
+        #below is mostly from the tutorial script-----
         #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -407,20 +463,18 @@ while run : #main game loop
         ## All the results have been drawn on the frame, so it's time to display it.
         #cv2.imshow('Object detector', frame)
         
+        #ghk48: write to temp file so pygame can read and display
         cv2.imwrite('./tmp.bmp', frame) #write frame
         img = pygame.image.load('./tmp.bmp') #read frame
         win.fill((0,0,0)) #clear screen
         win.blit(img, (0,0)) #add frame
-        #pygame.display.flip() #show frame
         pygame.display.update()
+        
         # Calculate framerate
         t2 = cv2.getTickCount()
         time1 = (t2-t1)/freq
         frame_rate_calc= 1/time1
-
-        # Press 'q' to quit
-        #if cv2.waitKey(1) == ord('q'):
-        #    break
+    
             
 GPIO.cleanup()
 pygame.quit()

@@ -21,11 +21,12 @@ class character(object):
         self.defense = 0
         self.signaling = 0
         self.physics_on = 2
+        self.env_type = "none"
         self.hitbox = (self.x, self.y, self.x+self.width, self.height)
 
     def draw(self, win):
         self.hitbox = (self.x, self.y, self.width, self.height)
-        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+        #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
         if self.signaling:
             win.blit(self.image, (self.x, self.y))
@@ -86,13 +87,15 @@ class item(object):
         self.height = height
         self.equippable = equippable
         self.picked_up = False
+        self.env_type = "none"
+        self.health = 10
         self.image = image
         self.hitbox = (self.x, self.y, self.x + self.width, self.y + self.height)
         self.physics_on = 1
 
     def draw(self, win, hero):
         self.hitbox = (self.x, self.y, self.width, self.height)
-        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+        #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
 
 class weapon(item):
@@ -105,14 +108,14 @@ class weapon(item):
             self.draw_equipped(win, hero)
         else:
             self.hitbox = (self.x, self.y, self.width, self.height)
-            pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+            #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
             win.blit(self.image, (self.x, self.y))
 
     def draw_equipped(self, win, hero):
         self.x = hero.x+self.width
         self.y = hero.y
         self.hitbox = (self.x, self.y, self.width, self.height)
-        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+        #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         #TODO: figure out correct location on hero to draw
         win.blit(self.image, (self.x, self.y))
 
@@ -128,14 +131,14 @@ class armor(item):
             self.draw_equipped(win, hero)
         else:#draw on ground at initial position
             self.hitbox = (self.x , self.y , self.width, self.height)
-            pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+            #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
             win.blit(self.image, (self.x, self.y))
 
     def draw_equipped(self, win, hero):
         self.x = hero.x
         self.y = hero.y+self.height
         self.hitbox = (self.x, self.y, self.width, self.height)
-        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+        #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
 
         #TODO: figure out correct location on hero to draw
         if self.body_location == "head":
@@ -148,7 +151,7 @@ class armor(item):
             win.blit(self.image, (hero.x + 5, hero.y + 10))
             
         elif self.body_location == "torso":
-            win.blit(self.image, (hero.x + 5, hero.y + 10))
+            win.blit(self.image, (hero.x+5, hero.y + 28))
 
 #class for global objects/effects
 
@@ -184,7 +187,7 @@ class obstacle(object):
     def draw(self, win):
         #self.hitbox = (self.x, self.y + 25, self.width, self.height)
         self.hitbox = (self.x, self.y, self.width, self.height)
-        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+        #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(self.image, (self.x, self.y))
 
 
@@ -200,36 +203,49 @@ def find_collisions(obj_list):
     #select the next object to compare and remove it from the list
     curr_obj = obj_list_copy[0]
     obj_list_copy.remove(curr_obj)
-
-    #identify rect for obj hitbox
-    rect1 = pygame.Rect(curr_obj.hitbox)
-    collide_flag = False
-    for obj in obj_list_copy:
-        rect2 = pygame.Rect(obj.hitbox)
-        if rect1.colliderect(rect2):
-            #collsion detected; collision flag for curr_obj = True
-            #append obj to collision list
-            collision_list.append(obj)
-            obj_list_copy.remove(obj)
-            collide_flag = True
-            
-            #check for item collide with hero
-            if(isinstance(curr_obj, character) and isinstance(obj,item)):
-                obj.picked_up = True
-                curr_obj.inventory.append(obj)
-            if(isinstance(curr_obj,item) and isinstance(obj,character)):
-                curr_obj.picked_up = True
-                obj.inventory.append(curr_obj)
-            
-    if collide_flag:
-        #curr_object collided with something; add it to the collide list
-        collision_list.append(curr_obj)
     
+    #if the object is an equipped item, ignore collisions
+    if(not(isinstance(curr_obj,item) and curr_obj.equippable and curr_obj.picked_up)):
+        #identify rect for obj hitbox
+        rect1 = pygame.Rect(curr_obj.hitbox)
+        collide_flag = False
+        for obj in obj_list_copy:
+            #if the object is an equipped item, ignore collisions
+            if(not(isinstance(obj,item) and obj.equippable and obj.picked_up)):
+                rect2 = pygame.Rect(obj.hitbox)
+                if rect1.colliderect(rect2):
+                    #collsion detected; collision flag for curr_obj = True
+                    #append obj to collision list
+                    collision_list.append(obj)
+                    obj_list_copy.remove(obj)
+                    collide_flag = True
+                    
+                    #check for item collide with hero
+                    if(isinstance(curr_obj, character) and isinstance(obj,item)):
+                        obj.picked_up = True
+                        curr_obj.inventory.append(obj)
+                        if(isinstance(obj,armor)):
+                            curr_obj.env_type = obj.env_type
+                        elif(isinstance(obj,weapon)):
+                            pass
+                        else:
+                            curr_obj.health += obj.health
+                    if(isinstance(curr_obj,item) and isinstance(obj,character)):
+                        curr_obj.picked_up = True
+                        obj.inventory.append(curr_obj)
+                        if(isinstance(curr_obj,armor)):
+                            obj.env_type = curr_obj.env_type
+                        elif(isinstance(curr_obj,weapon)):
+                            pass
+                        else:
+                            obj.health += curr_obj.health
+        if collide_flag:
+            #curr_object collided with something; add it to the collide list
+            collision_list.append(curr_obj)
     #search the remaining obj_list for collisions:
     return collision_list + find_collisions(obj_list_copy)
 
 def collide(obj_list, direc):
-    #TODO: add check to make objects that can be picked up by the hero picked up
     collided = find_collisions(obj_list)
     for obj in obj_list:
         if obj in collided:
@@ -259,11 +275,13 @@ def collide(obj_list, direc):
 def move_objs(obj_list, direc):
     if direc == 'x':
         for obj in obj_list:
+            #if(isinstance(obj,item) and not obj.picked_up):
             obj.x += obj.speedx
             #update hitbox
             obj.hitbox = (obj.x, obj.y, obj.width, obj.height)
     else:
         for obj in obj_list:
+            #if(isinstance(obj,item) and not obj.picked_up):
             obj.y += obj.speedy
             #gravity
             if obj.physics_on==1 or obj.physics_on==2:
