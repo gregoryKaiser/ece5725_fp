@@ -309,10 +309,10 @@ def redrawWindow():
     win.blit(hero_text, (10,34))
     
     #icon indicators for player
-    win.blit(stop_im, (300,10))
-    win.blit(left_im, (300,70))
-    win.blit(right_im, (300,130))
-    win.blit(camera_im, (300,190))
+    win.blit(stop_im, (290,10))
+    win.blit(camera_im, (290,70))
+    win.blit(left_im, (290,130))
+    win.blit(right_im, (290,190))
     
     
     pygame.display.update()
