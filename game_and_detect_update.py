@@ -16,8 +16,8 @@ import pygame
 from pygame.locals import *
 
 #TFT stuff
-#os.putenv('SDL_VIDEODRIVER','fbcon')
-#os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+os.putenv('SDL_VIDEODRIVER','fbcon')
+os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
 os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
 os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
@@ -254,13 +254,13 @@ armor_im = pygame.image.load("armor.png")
 armor_im = pygame.transform.scale(armor_im,(15,15))
 #images for the side buttons
 stop_im = pygame.image.load("stop.png")
-stop_im = pygame.transform.scale(stop_im,(20,20))
+stop_im = pygame.transform.scale(stop_im,(30,30))
 left_im = pygame.image.load("left_arrow.png")
-left_im = pygame.transform.scale(left_im,(20,20))
+left_im = pygame.transform.scale(left_im,(30,30))
 right_im = pygame.image.load("right_arrow.png")
-right_im = pygame.transform.scale(right_im,(20,20))
-camera_im = pygame.image.load("camera.png")
-camera_im = pygame.transform.scale(camera_im,(20,20))
+right_im = pygame.transform.scale(right_im,(30,30))
+prayer_im = pygame.image.load("prayer.png")
+prayer_im = pygame.transform.scale(prayer_im,(30,30))
 #background
 bg_im = pygame.image.load("background.png")
 #image assets above-------------------------------
@@ -291,14 +291,14 @@ obj_capture = "none"
 def redrawWindow():
     global obj_capture
     global hero #for drawing relative to hero position
-    win.blit(bg_im, (0,0)) #background draw
+    win.blit(bg_im, (0,-140)) #background draw
     #global disp_objects
     largeFont = pygame.font.SysFont('comicsans', 20)
     #win.blit(bg, (bgX, 0))
     #win.blit(bg, (bgX2,0))
-    health_text = largeFont.render('Health: ' + str(hero.health), 1, (255,0,0))
-    hero_text = largeFont.render('Hero:'+str(hero.env_type), 1, (255,255,255))
-    env_text = largeFont.render('Current Env:'+str(env1.type), 1, (255,255,255))
+    health_text = largeFont.render('Health: '+str(hero.health), 1, (255,0,0))
+    hero_text = largeFont.render('Equipped: '+str(hero.env_type), 1, (255,255,255))
+    env_text = largeFont.render('Current Env: '+str(env1.type), 1, (255,255,255))
     for obstacle in disp_objects:
         if isinstance(obstacle,classes.item):
             obstacle.draw(win,hero)
@@ -310,9 +310,9 @@ def redrawWindow():
     
     #icon indicators for player
     win.blit(stop_im, (290,10))
-    win.blit(camera_im, (290,70))
-    win.blit(left_im, (290,130))
-    win.blit(right_im, (290,190))
+    win.blit(prayer_im, (290,80))
+    win.blit(left_im, (290,150))
+    win.blit(right_im, (290,210))
     
     
     pygame.display.update()
@@ -359,8 +359,8 @@ while run : #main game loop
         color = (200,200,200)
         title_text = title_font.render('It\'s Dangerous', 1, color)
         title_text2 = title_font.render('to Go Alone...', 1, color)
-        win.blit(title_text, (10, 120))
-        win.blit(title_text2, (10, 150))
+        win.blit(title_text, (10, 80))
+        win.blit(title_text2, (10, 110))
         pygame.display.update()
         time.sleep(3)
         GAME_STATE = GAME_PLAY
@@ -372,7 +372,7 @@ while run : #main game loop
         win.fill((BLACK))
         end_font = pygame.font.SysFont('comicsans', 50)
         end_text = end_font.render('You Died', 1, (255,0,0))
-        win.blit(end_text, (60, 120))
+        win.blit(end_text, (80, 80))
         pygame.display.update()
         time.sleep(3)
         win.fill((BLACK))
