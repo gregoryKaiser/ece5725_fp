@@ -1,4 +1,5 @@
 import socket, pickle
+import classes_multi
 
 class tst_obj:
     def __init__(self, img, x_pos, y_pos, x_speed, y_speed):

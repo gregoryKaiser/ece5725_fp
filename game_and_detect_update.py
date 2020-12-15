@@ -399,7 +399,7 @@ while run : #main game loop
                 hero.jump()
             if event.type == USEREVENT+2: #3 second timer
                 #check for environment matched
-                if((not env1.type=="none") and (not env1.type==hero.env_type)):
+                if((not env1.type=="none") and (not env1.type=="normal") and (not env1.type==hero.env_type)):
                     hero.health -= 1
         #check for end state
         if(hero.health<=0 or hero.y>=280):
