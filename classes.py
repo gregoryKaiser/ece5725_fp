@@ -5,7 +5,7 @@ class character(object):
     #TODO: get image and define image path
     image = pygame.image.load("circle.png")
     
-    def __init__(self, image, x, y, glob_x, glob_y, width, height):
+    def __init__(self, image_l, image_r, x, y, glob_x, glob_y, width, height):
         self.x = x
         self.y = y
         self.glob_x = glob_x
@@ -14,7 +14,8 @@ class character(object):
         self.height = height
         self.speedx = 0 #set high/low during button press
         self.speedy = 0 #set high when jumping
-        self.image = image
+        self.image_r = image_r
+        self.image_l = image_l
         self.health = 100
         self.inventory = []
         self.attack = 0
@@ -27,9 +28,10 @@ class character(object):
     def draw(self, win):
         self.hitbox = (self.x, self.y, self.width, self.height)
         #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
-        win.blit(self.image, (self.x, self.y))
-        if self.signaling:
-            win.blit(self.image, (self.x, self.y))
+        if(self.speedx<0):
+            win.blit(self.image_l, (self.x, self.y))
+        else:
+            win.blit(self.image_r, (self.x, self.y))
 
     def moveRight(self): #upon button press
         self.speedx = 3

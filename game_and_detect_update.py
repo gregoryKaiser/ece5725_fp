@@ -237,8 +237,10 @@ def move_hero_right(channel):
 
 
 #image assets-------------------------------
-hero_im = pygame.image.load("staticBoy.png")
+hero_im = pygame.image.load("rightBoy.png")
 hero_im = pygame.transform.scale(hero_im,(50,50))
+hero_im_l = pygame.image.load("leftBoy.png")
+hero_im_l = pygame.transform.scale(hero_im,(50,50))
 ground_im = pygame.image.load("Ground.png")
 ground_im = pygame.transform.scale(ground_im, (320, 40))
 circle_im = pygame.image.load("circle.png")
@@ -269,7 +271,7 @@ clock = pygame.time.Clock()
 
 #====Create game objects====
 global hero
-hero = classes.character(hero_im, 90, 50, 90, 50, 25, 50)
+hero = classes.character(hero_im_l, hero_im, 90, 50, 90, 50, 25, 50)
 hero.speedx = 0
 hero.speedy = 2
 
@@ -377,7 +379,7 @@ while run : #main game loop
         pygame.display.update()
         time.sleep(3)
         #reset hero
-        hero = classes.character(hero_im, 50, 50, 50, 50, 25, 50)
+        hero = classes.character(hero_im_l, hero_im, 50, 50, 50, 50, 25, 50)
         hero.speedx = 0
         hero.speedy = 2
         disp_objects.append(hero)
