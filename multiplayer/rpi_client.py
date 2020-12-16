@@ -12,7 +12,7 @@ class Client:
         self.s.connect((self.HOST, self.PORT))
 
 
-hostname = '192.168.1.128'#'192.168.1.128'
+hostname = 'localhost'#'192.168.1.128'
 port = 50007
 
 #stuff for actually playing the game/showing what is on the screen
@@ -420,13 +420,13 @@ while run : #main game loop
             all_objects.remove(hero)
             GAME_STATE = END_SCREEN
         #move everything x
-        classes.move_objs(disp_objects, 'x')
+        classes_multi.move_objs(disp_objects, 'x')
         #check for x collisions
-        classes.collide(disp_objects, 'x')
+        classes_multi.collide(disp_objects, 'x')
         #move everything y
-        classes.move_objs(disp_objects, 'y')
+        classes_multi.move_objs(disp_objects, 'y')
         #check for y collisions
-        classes.collide(disp_objects, 'y')  
+        classes_multi.collide(disp_objects, 'y')  
         #clock.tick(40)
         win.fill(BLACK)
         redrawWindow()
