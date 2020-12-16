@@ -22,21 +22,24 @@ class character(object):
         self.defense = 0
         self.signaling = 0
         self.physics_on = 2
+        self.direction = 0
         self.env_type = "none"
         self.hitbox = (self.x, self.y, self.x+self.width, self.height)
 
     def draw(self, win):
         self.hitbox = (self.x, self.y, self.width, self.height)
         #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
-        if(self.speedx<0):
+        if(self.direction==1):
             win.blit(self.image_l, (self.x, self.y))
         else:
             win.blit(self.image_r, (self.x, self.y))
 
     def moveRight(self): #upon button press
+        self.direction = 0
         self.speedx = 3
 
     def moveLeft(self): #upon button press
+        self.direction = 1
         self.speedx = -3
 
     def jump(self): #upon button press
@@ -118,7 +121,7 @@ class weapon(item):
     def draw_equipped(self, win, hero):
         self.y = hero.y+4
         self.hitbox = (self.x, self.y, self.width, self.height)
-        if hero.speedx > 0:
+        if hero.direction==0:
             self.x = hero.x+int(self.width/2)
             win.blit(self.image_r, (self.x, self.y))
         else:
