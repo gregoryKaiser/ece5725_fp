@@ -101,9 +101,11 @@ class item(object):
         win.blit(self.image, (self.x, self.y))
 
 class weapon(item):
-    def __init__(self, image, name, x, y, global_x, global_y, width, height, equippable, attack):
-        super().__init__(image_l, image_r, name, x, y, global_x, global_y, width, height, equippable)
+    def __init__(self, image_l, image_r, name, x, y, global_x, global_y, width, height, equippable, attack):
+        super().__init__(image_l, name, x, y, global_x, global_y, width, height, equippable)
         self.attack = attack
+        self.image_l = image_l
+        self.image_r = image_r
 
     def draw(self, win, hero):
         if(self.picked_up):
