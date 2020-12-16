@@ -274,7 +274,7 @@ clock = pygame.time.Clock()
 
 #====Create game objects====
 global hero
-hero = classes_multi.character("../staticBoy.png", 90, 50, 90, 50, 50, 50)
+hero = classes_multi.character("../rightBoy.png", 90, 50, 90, 50, 25, 50)
 hero.speedx = 0
 hero.speedy = 2
 
@@ -331,7 +331,7 @@ def drop_item_noncb():
     global disp_objects
     global obj_capture
     if(obj_capture in recog_knife):
-        knife = classes_multi.weapon("../knife.png", "knife", 310, 50, 310, 50, 30, 30, True, 10)
+        knife = classes_multi.weapon("../rightknife.png", "knife", 310, 50, 310, 50, 30, 30, True, 10)
         knife.speedx = -10
         disp_objects.append(knife)
     elif(obj_capture in recog_fruit):

@@ -25,7 +25,7 @@ class character(object):
     def draw(self, win):
         image_disp = pygame.image.load(self.imagepath)
         image_disp = pygame.transform.scale(image_disp,(self.width,self.height))
-        self.hitbox = (self.x, self.y, self.width-25, self.height)
+        self.hitbox = (self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(image_disp, (self.x, self.y))
         if self.signaling:
