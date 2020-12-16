@@ -16,8 +16,8 @@ import pygame
 from pygame.locals import *
 
 #TFT stuff
-os.putenv('SDL_VIDEODRIVER','fbcon')
-os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+#os.putenv('SDL_VIDEODRIVER','fbcon')
+#os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
 os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
 os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
@@ -240,7 +240,7 @@ def move_hero_right(channel):
 hero_im = pygame.image.load("rightBoy.png")
 hero_im = pygame.transform.scale(hero_im,(50,50))
 hero_im_l = pygame.image.load("leftBoy.png")
-hero_im_l = pygame.transform.scale(hero_im,(50,50))
+hero_im_l = pygame.transform.scale(hero_im_l,(50,50))
 ground_im = pygame.image.load("Ground.png")
 ground_im = pygame.transform.scale(ground_im, (320, 40))
 circle_im = pygame.image.load("circle.png")
