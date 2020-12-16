@@ -1,7 +1,23 @@
-#
+import socket, pickle
+import classes_multi
+
+class Client:
+    def __init__(self, HOST, PORT):
+        self.HOST = HOST
+        self.PORT = PORT
+        self.s = None
+
+    def connect(self):
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.connect((self.HOST, self.PORT))
+
+
+hostname = '192.168.1.128'#'192.168.1.128'
+port = 50007
+
+#stuff for actually playing the game/showing what is on the screen
 import os
 import random
-import classes
 import RPi.GPIO as GPIO
 import time
 import subprocess
@@ -16,11 +32,10 @@ import pygame
 from pygame.locals import *
 
 #TFT stuff
-os.putenv('SDL_VIDEODRIVER','fbcon')
-os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+#os.putenv('SDL_VIDEODRIVER','fbcon')
+#os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
 os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
 os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
-
 #pygame initialization
 pygame.init()
 W, H = 320, 240
@@ -182,14 +197,7 @@ move_r_toggle = 0
 def quit_game(channel):
     global run
     run = False
-
-#finite state machine
-GAME_STATE = 4
-GAME_PLAY = 1
-OBJ_DETECT = 2
-END_SCREEN = 3
-MENU_SCREEN = 4
-
+    
 #recognizable objects taken from "lablemap.txt" in Sample_TFLite_model
 #recog_obj = ["knife","scissors","apple","banana","person","bed","tv","laptop","mouse","keyboard","cell phone","book"]
 recog_knife = ["knife", "scissors"]
@@ -212,7 +220,6 @@ def switch_state(channel):
             drop_item_noncb()
     #print("switch",GAME_STATE)
     #run=False
-
 def move_hero_left(channel):
     global hero
     global move_l_toggle
@@ -234,50 +241,48 @@ def move_hero_right(channel):
     else:
         move_r_toggle = 0
         hero.speedx = 0
-
-
-#image assets-------------------------------
-hero_im = pygame.image.load("staticBoy.png")
-hero_im = pygame.transform.scale(hero_im,(50,50))
-ground_im = pygame.image.load("Ground.png")
-ground_im = pygame.transform.scale(ground_im, (320, 40))
-circle_im = pygame.image.load("circle.png")
-circle_im2 = pygame.transform.scale(circle_im, (30,30))
-circle_im = pygame.transform.scale(circle_im, (100,100))
-brick = pygame.image.load("brick.png")
-brick = pygame.transform.scale(brick, (40,40))
-knife_im = pygame.image.load("knife.png")
-knife_im = pygame.transform.scale(knife_im,(30,30))
-apple_im = pygame.image.load("apple.png")
-apple_im = pygame.transform.scale(apple_im,(30,30))
-armor_im = pygame.image.load("armor.png")
-armor_im = pygame.transform.scale(armor_im,(15,15))
+# #image assets-------------------------------
+# hero_im = pygame.image.load("../staticBoy.png")
+# hero_im = pygame.transform.scale(hero_im,(50,50))
+# ground_im = pygame.image.load("../Ground.png")
+# ground_im = pygame.transform.scale(ground_im, (320, 40))
+# circle_im = pygame.image.load("../circle.png")
+# circle_im2 = pygame.transform.scale(circle_im, (30,30))
+# circle_im = pygame.transform.scale(circle_im, (100,100))
+# brick = pygame.image.load("../brick.png")
+# brick = pygame.transform.scale(brick, (40,40))
+# knife_im = pygame.image.load("../knife.png")
+# knife_im = pygame.transform.scale(knife_im,(30,30))
+# apple_im = pygame.image.load("../apple.png")
+# apple_im = pygame.transform.scale(apple_im,(30,30))
+# armor_im = pygame.image.load("../armor.png")
+# armor_im = pygame.transform.scale(armor_im,(15,15))
 #images for the side buttons
-stop_im = pygame.image.load("stop.png")
+stop_im = pygame.image.load("../stop.png")
 stop_im = pygame.transform.scale(stop_im,(30,30))
-left_im = pygame.image.load("left_arrow.png")
+left_im = pygame.image.load("../left_arrow.png")
 left_im = pygame.transform.scale(left_im,(30,30))
-right_im = pygame.image.load("right_arrow.png")
+right_im = pygame.image.load("../right_arrow.png")
 right_im = pygame.transform.scale(right_im,(30,30))
-prayer_im = pygame.image.load("prayer.png")
+prayer_im = pygame.image.load("../prayer.png")
 prayer_im = pygame.transform.scale(prayer_im,(30,30))
 #background
-bg_im = pygame.image.load("background.png")
+bg_im = pygame.image.load("../background.png")
 #image assets above-------------------------------
 
 clock = pygame.time.Clock()
 
 #====Create game objects====
 global hero
-hero = classes.character(hero_im, 90, 50, 90, 50, 25, 50)
+hero = classes_multi.character("../staticBoy.png", 90, 50, 90, 50, 50, 50)
 hero.speedx = 0
 hero.speedy = 2
 
-env1 = classes.environment(100, 300, "cold", 1) #wintertime environment
-block = classes.obstacle(brick, 150, 160, 150, 160, 40, 40, "hot")
-block2 = classes.obstacle(brick, 30, 100, 30, 100, 40, 40, "hot")
-floor = classes.obstacle(ground_im, 60, 200, 60, 200, 320, 15, "normal")
-#floor2 = classes.obstacle(ground_im, -300, 200, -300, 200, 320, 15, "normal")
+env1 = classes_multi.environment(100, 300, "cold", 1) #wintertime environment
+block = classes_multi.obstacle("../brick.png", 150, 160, 150, 160, 40, 40, "hot")
+block2 = classes_multi.obstacle("../brick.png", 30, 100, 30, 100, 40, 40, "hot")
+floor = classes_multi.obstacle("../Ground.png", 60, 200, 60, 200, 320, 30, "normal")
+#floor2 = classes_multi.obstacle(ground_im, -300, 200, -300, 200, 320, 15, "normal")
 
 all_objects = [hero, env1, floor, block]
 disp_objects = [hero, floor, block, block2]
@@ -286,7 +291,7 @@ run = True
 score = 0
 # pygame.time.set_timer(USEREVENT+1, 500)
 pygame.time.set_timer(USEREVENT+2, 3000)
-global obj_capture #stores the last recognized object in the camera frame
+# global obj_capture #stores the last recognized object in the camera frame
 obj_capture = "none"
 
 def redrawWindow():
@@ -303,7 +308,7 @@ def redrawWindow():
     hero_text = largeFont.render('Equipped: '+str(hero.env_type), 1, (255,255,255))
     env_text = largeFont.render('Current Env: '+str(env1.type), 1, (255,255,255))
     for obstacle in disp_objects:
-        if isinstance(obstacle,classes.item):
+        if isinstance(obstacle,classes_multi.item):
             obstacle.draw(win,hero)
         else:
             obstacle.draw(win)
@@ -319,7 +324,6 @@ def redrawWindow():
     win.blit(left_im, (290,150))
     win.blit(right_im, (290,210))
     
-    
     pygame.display.update()
 
 def drop_item_noncb():
@@ -327,15 +331,15 @@ def drop_item_noncb():
     global disp_objects
     global obj_capture
     if(obj_capture in recog_knife):
-        knife = classes.weapon(knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10)
+        knife = classes_multi.weapon("../knife.png", "knife", 310, 50, 310, 50, 30, 30, True, 10)
         knife.speedx = -10
         disp_objects.append(knife)
     elif(obj_capture in recog_fruit):
-        apple = classes.item(apple_im, "apple", 310, 50, 310, 50, 30, 30, False)
+        apple = classes_multi.item("../apple.png", "apple", 310, 50, 310, 50, 30, 30, False)
         apple.speedx = -10
         disp_objects.append(apple)
     elif(obj_capture in recog_armor):
-        shirt = classes.armor(armor_im, "armor", 310, 50, 310, 50, 15, 15, True, 10, "cold", "torso")
+        shirt = classes_multi.armor("../armor.png", "armor", 310, 50, 310, 50, 15, 15, True, 10, "cold", "torso")
         shirt.speedx = -10
         disp_objects.append(shirt)
 
@@ -345,6 +349,17 @@ GPIO.add_event_detect(23, GPIO.BOTH, callback=move_hero_left, bouncetime=100)
 GPIO.add_event_detect(27, GPIO.BOTH, callback=move_hero_right, bouncetime=100)
 GPIO.add_event_detect(22, GPIO.FALLING, callback = switch_state, bouncetime=100)
 #======================end gameplay setup====================================
+
+#client send the game data over the network
+client = Client(hostname, port)
+client.connect()
+
+#finite state machine
+GAME_STATE = 4
+GAME_PLAY = 1
+OBJ_DETECT = 2
+END_SCREEN = 3
+MENU_SCREEN = 4
 
 while run : #main game loop
     clock.tick(40)
@@ -377,7 +392,7 @@ while run : #main game loop
         pygame.display.update()
         time.sleep(3)
         #reset hero
-        hero = classes.character(hero_im, 50, 50, 50, 50, 25, 50)
+        hero = classes_multi.character("../staticBoy.png", 50, 50, 50, 50, 50, 50)
         hero.speedx = 0
         hero.speedy = 2
         disp_objects.append(hero)
@@ -494,7 +509,15 @@ while run : #main game loop
         time1 = (t2-t1)/freq
         frame_rate_calc= 1/time1
     
-            
+    # #update the displayable objects
+    # #by sending the changes to the server
+    print("sending")
+    data_send = pickle.dumps(disp_objects)
+    try:
+        client.s.send(data_send)
+    except socket.error as e:
+        print(str(e))
+    
 GPIO.cleanup()
 pygame.quit()
 cv2.destroyAllWindows()
