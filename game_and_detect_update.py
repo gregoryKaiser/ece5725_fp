@@ -248,8 +248,11 @@ circle_im2 = pygame.transform.scale(circle_im, (30,30))
 circle_im = pygame.transform.scale(circle_im, (100,100))
 brick = pygame.image.load("brick.png")
 brick = pygame.transform.scale(brick, (40,40))
-knife_im = pygame.image.load("knife.png")
+knife_im = pygame.image.load("rightknife.png")
 knife_im = pygame.transform.scale(knife_im,(30,30))
+knife_im_l = pygame.image.load("leftknife.png")
+knife_im_l = pygame.transform.scale(knife_im_l,(30,30))
+
 apple_im = pygame.image.load("apple.png")
 apple_im = pygame.transform.scale(apple_im,(30,30))
 armor_im = pygame.image.load("armor.png")
@@ -329,7 +332,7 @@ def drop_item_noncb():
     global disp_objects
     global obj_capture
     if(obj_capture in recog_knife):
-        knife = classes.weapon(knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10)
+        knife = classes.weapon(knife_im_l, knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10)
         knife.speedx = -10
         disp_objects.append(knife)
     elif(obj_capture in recog_fruit):
