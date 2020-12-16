@@ -102,7 +102,7 @@ class item(object):
 
 class weapon(item):
     def __init__(self, image, name, x, y, global_x, global_y, width, height, equippable, attack):
-        super().__init__(image, name, x, y, global_x, global_y, width, height, equippable)
+        super().__init__(image_l, image_r, name, x, y, global_x, global_y, width, height, equippable)
         self.attack = attack
 
     def draw(self, win, hero):
@@ -111,15 +111,20 @@ class weapon(item):
         else:
             self.hitbox = (self.x, self.y, self.width, self.height)
             #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
-            win.blit(self.image, (self.x, self.y))
+            win.blit(self.image_r, (self.x, self.y))
 
     def draw_equipped(self, win, hero):
-        self.x = hero.x+int(self.width/2)
         self.y = hero.y+4
         self.hitbox = (self.x, self.y, self.width, self.height)
+        if hero.speedx > 0:
+            self.x = hero.x+int(self.width/2)
+            win.blit(self.image_r, (self.x, self.y))
+        else:
+            self.x = hero.x-int(self.width/2)
+            win.blit(self.image_l, (self.x, self.y))
         #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
-        #TODO: figure out correct location on hero to draw
-        win.blit(self.image, (self.x, self.y))
+        
+        
 
 class armor(item):
     def __init__(self, image, name, x, y, global_x, global_y, width, height, equippable, defense, env_type, body_location):
