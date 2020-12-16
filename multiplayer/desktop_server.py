@@ -1,18 +1,35 @@
 import socket, pickle
 import classes_multi
 
-class Client:
+class Server:
     def __init__(self, HOST, PORT):
         self.HOST = HOST
         self.PORT = PORT
         self.s = None
-
+        self.conn = None
+        self.addr = None
+    
     def connect(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((self.HOST, self.PORT))
+        try:
+            self.s.bind((self.HOST, self.PORT))
+        except socket.error as e:
+            print(str(e))
+        self.s.listen(1)
+        print("Waiting for a connection")
+        self.conn, self.addr = self.s.accept()
+        print( "Connected by: ", self.addr)
+        return self.conn, self.addr
 
+    def get_data(self):
+        data = self.conn.recv(4096)
+        data_var = pickle.loads(data)
+        return data_var
 
-hostname = 'localhost'#'192.168.56.1'
+    def close_connection(self):
+        self.conn.close()
+
+hostname = 'localhost'
 port = 50007
 
 #stuff for actually playing the game/showing what is on the screen
@@ -75,7 +92,7 @@ bg_im = pygame.image.load("../background.png")
 clock = pygame.time.Clock()
 
 #====Create game objects====
-global hero
+# global hero
 hero = classes_multi.character("../staticBoy.png", 90, 50, 90, 50, 50, 50)
 hero.speedx = 0
 hero.speedy = 2
@@ -98,7 +115,7 @@ pygame.time.set_timer(USEREVENT+2, 3000)
 
 def redrawWindow():
     global obj_capture
-    global hero #for drawing relative to hero position
+    global hero #for drawing relative to hero position and health
     win.blit(bg_im, (-80,-140)) #background draw
     #global disp_objects
     largeFont = pygame.font.SysFont('comicsans', 25)
@@ -152,9 +169,9 @@ def drop_item_noncb():
 # GPIO.add_event_detect(22, GPIO.FALLING, callback = switch_state, bouncetime=100)
 #======================end gameplay setup====================================
 
-#client send the game data over the network
-client = Client(hostname, port)
-client.connect()
+#server send the game data over the network
+server = Server(hostname, port)
+server.connect()
 
 #finite state machine
 GAME_STATE = 4
@@ -165,107 +182,27 @@ MENU_SCREEN = 4
 
 while run : #main game loop
     clock.tick(40)
-
-    keys = pygame.key.get_pressed()
-
-    if keys[pygame.K_RIGHT]:
-        hero.moveRight()
-    elif keys[pygame.K_LEFT]:
-        hero.moveLeft()
-    else:
-        hero.speedx = 0
-
-    if keys[pygame.K_UP]:
-        hero.jump()
-
-    if GAME_STATE==MENU_SCREEN:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-            if event.type == pygame.K_ESCAPE:
-                run = False
-                pygame.quit()
-        title_font = pygame.font.SysFont('comicsans', 50)
-        color = 200,200,200
-        title_text = title_font.render('It\'s Dangerous', 1, (color))
-        title_text2 = title_font.render('to Go Alone...', 1, (color))
-        win.blit(title_text, (10, 80))
-        win.blit(title_text2, (10, 110))
-        pygame.display.update()
-        time.sleep(3)
-        GAME_STATE = GAME_PLAY
-    elif GAME_STATE==END_SCREEN:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-            if event.type == pygame.K_ESCAPE:
-                run = False
-                pygame.quit()
-        win.fill((BLACK))
-        end_font = pygame.font.SysFont('comicsans', 50)
-        end_text = end_font.render('You Died', 1, (255,0,0))
-        win.blit(end_text, (80, 80))
-        pygame.display.update()
-        time.sleep(3)
-        win.fill((BLACK))
-        pygame.display.update()
-        time.sleep(3)
-        #reset hero
-        hero = classes_multi.character("../staticBoy.png", 50, 50, 50, 50, 50, 50)
-        hero.speedx = 0
-        hero.speedy = 2
-        disp_objects.append(hero)
-        all_objects.append(hero)
-        GAME_STATE = MENU_SCREEN
-    elif GAME_STATE==GAME_PLAY:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                run = False
-            if event.type is MOUSEBUTTONDOWN:
-                hero.jump()
-            if event.type == USEREVENT+2: #3 second timer
-                #check for environment matched
-                if((not env1.type=="none") and (not env1.type==hero.env_type)):
-                    hero.health -= 1
-            if event.type == pygame.K_ESCAPE:
-                run = False
-                pygame.quit()
-        #check for end state
-        if(hero.health<=0 or hero.y>=280):
-            #remove all of the hero's assets
-            for item in hero.inventory:
-                if item.equippable:
-                    disp_objects.remove(item)
-            #remove the hero itself
-            disp_objects.remove(hero)
-            all_objects.remove(hero)
-            GAME_STATE = END_SCREEN
-        #move everything x
-        classes_multi.move_objs(disp_objects, 'x')
-        #check for x collisions
-        classes_multi.collide(disp_objects, 'x')
-        #move everything y
-        classes_multi.move_objs(disp_objects, 'y')
-        #check for y collisions
-        classes_multi.collide(disp_objects, 'y')  
-        #clock.tick(40)
-        win.fill(BLACK)
-        redrawWindow()
-    
-    # #update the displayable objects
-    # #by sending the changes to the server
-    print("sending")
-    data_send = pickle.dumps(disp_objects)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+            pygame.quit()
+    #update the displayable objects
+    #by getting changes from the client
     try:
-        client.s.send(data_send)
-    except socket.error as e:
-        print(str(e))
+        data_unpack = server.get_data() 
+        print('Data recieved:',data_unpack)
+        disp_objects = data_unpack
+    except:
+        print("Closing connection")
+        server.close_connection()
+        break
     
-            
+    win.fill(BLACK)
+    redrawWindow()
+
 #GPIO.cleanup()
 pygame.quit()
 #cv2.destroyAllWindows()
 #videostream.stop()
+
+

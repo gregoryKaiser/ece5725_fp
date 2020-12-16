@@ -20,13 +20,13 @@ class character(object):
         self.signaling = 0
         self.physics_on = 2
         self.env_type = "none"
-        self.hitbox = (self.x, self.y, self.x+self.width, self.height)
+        self.hitbox = (self.x, self.y, self.width, self.height)
 
     def draw(self, win):
         image_disp = pygame.image.load(self.imagepath)
         image_disp = pygame.transform.scale(image_disp,(self.width,self.height))
-        self.hitbox = (self.x, self.y, self.width, self.height)
-        #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+        self.hitbox = (self.x, self.y, self.width-25, self.height)
+        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(image_disp, (self.x, self.y))
         if self.signaling:
             win.blit(image_disp, (self.x, self.y))
@@ -189,7 +189,7 @@ class obstacle(object):
         self.speedy = 0 #always zero
         self.type = env_type
         self.imagepath = imagepath
-        self.hitbox = (self.x, self.y, self.x + self.width, self.y + self.height)
+        self.hitbox = (self.x, self.y, self.width, self.height)
         self.physics_on = 0
 
     def draw(self, win):
@@ -197,7 +197,7 @@ class obstacle(object):
         image_disp = pygame.transform.scale(image_disp,(self.width,self.height))
         #self.hitbox = (self.x, self.y + 25, self.width, self.height)
         self.hitbox = (self.x, self.y, self.width, self.height)
-        #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         win.blit(image_disp, (self.x, self.y))
 
 
