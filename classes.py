@@ -125,7 +125,7 @@ class weapon(item):
             self.x = hero.x+int(self.width/2)
             win.blit(self.image_r, (self.x, self.y))
         else:
-            self.x = hero.x-int(self.width/2)
+            self.x = hero.x-int(self.width/2)-2
             win.blit(self.image_l, (self.x, self.y))
         #pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
         
@@ -163,7 +163,7 @@ class armor(item):
             win.blit(self.image, (hero.x + 5, hero.y + 10))
             
         elif self.body_location == "torso":
-            win.blit(self.image, (hero.x+5, hero.y + 28))
+            win.blit(self.image, (hero.x+5, hero.y + 30))
 
 #class for global objects/effects
 
