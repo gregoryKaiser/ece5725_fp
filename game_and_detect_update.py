@@ -29,6 +29,7 @@ win = pygame.display.set_mode((W, H))
 pygame.mouse.set_visible(False)
 
 pygame.display.set_caption('It\'s Dangerous To Go Alone...')
+
 #========================object detection setup=======================
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
@@ -191,9 +192,8 @@ END_SCREEN = 3
 MENU_SCREEN = 4
 
 #recognizable objects taken from "lablemap.txt" in Sample_TFLite_model
-#recog_obj = ["knife","scissors","apple","banana","person","bed","tv","laptop","mouse","keyboard","cell phone","book"]
 recog_knife = ["knife", "scissors"]
-recog_fruit = ["apple","banana","bed","person"]
+recog_fruit = ["apple","banana","orange"]
 recog_armor = ["umbrella","backpack","tie"]
 
 def switch_state(channel):
@@ -201,17 +201,13 @@ def switch_state(channel):
     global GAME_PLAY
     global OBJ_DETECT
     global obj_capture
-    #global run
-    #print("switch",GAME_STATE)
     if GAME_STATE==GAME_PLAY:
         GAME_STATE = OBJ_DETECT
     elif GAME_STATE==OBJ_DETECT:
         GAME_STATE = GAME_PLAY
-        if (not obj_capture=="none"):# and obj_capture in recog_obj):
+        if (not obj_capture=="none"):
             #spawn an object
             drop_item_noncb()
-    #print("switch",GAME_STATE)
-    #run=False
 
 def move_hero_left(channel):
     global hero
@@ -219,7 +215,6 @@ def move_hero_left(channel):
     if move_l_toggle == 0:
         move_l_toggle = 1
         hero.moveLeft()
-        
     else:
         move_l_toggle = 0
         hero.speedx = 0
@@ -298,13 +293,8 @@ def redrawWindow():
     global obj_capture
     global hero #for drawing relative to hero position
     win.blit(bg_im, (-80,-140)) #background draw
-    #global disp_objects
     largeFont = pygame.font.SysFont('comicsans', 25)
-    #outerFont = pygame.font.SysFont('comicsans', 27)
-    #win.blit(bg, (bgX, 0))
-    #win.blit(bg, (bgX2,0))
     health_text = largeFont.render('Health: '+str(hero.health), 1, (255,255,255))
-    #health_border = outerFont.render('Health: '+str(hero.health), 1, (255,255,255))
     hero_text = largeFont.render('Equipped: '+str(hero.env_type), 1, (255,255,255))
     env_text = largeFont.render('Current Env: '+str(env1.type), 1, (255,255,255))
     for obstacle in disp_objects:
@@ -312,19 +302,16 @@ def redrawWindow():
             obstacle.draw(win,hero)
         else:
             obstacle.draw(win)
-            
-    #win.blit(health_border, (10, 10))
+    #game state text (env and health)
     win.blit(health_text, (10, 10))
     win.blit(env_text, (10,24))
     win.blit(hero_text, (10,36))
-    
     #icon indicators for player
     win.blit(stop_im, (290,10))
     win.blit(prayer_im, (290,80))
     win.blit(left_im, (290,150))
     win.blit(right_im, (290,210))
-    
-    
+    #update display
     pygame.display.update()
 
 def drop_item_noncb():
@@ -332,17 +319,17 @@ def drop_item_noncb():
     global disp_objects
     global obj_capture
     if(obj_capture in recog_knife):
-        knife = classes.weapon(knife_im_l, knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10)
-        knife.speedx = -10
-        disp_objects.append(knife)
+        knife = classes.weapon(knife_im_l, knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10) #new item
+        knife.speedx = -10 #thrown in
+        disp_objects.append(knife) #add to screen
     elif(obj_capture in recog_fruit):
-        apple = classes.item(apple_im, "apple", 310, 50, 310, 50, 30, 30, False)
-        apple.speedx = -10
-        disp_objects.append(apple)
+        apple = classes.item(apple_im, "apple", 310, 50, 310, 50, 30, 30, False) #new item
+        apple.speedx = -10 #thrown in
+        disp_objects.append(apple) #add to screen
     elif(obj_capture in recog_armor):
-        shirt = classes.armor(armor_im, "armor", 310, 50, 310, 50, 15, 15, True, 10, "cold", "torso")
-        shirt.speedx = -10
-        disp_objects.append(shirt)
+        shirt = classes.armor(armor_im, "armor", 310, 50, 310, 50, 15, 15, True, 10, "cold", "torso") #new item
+        shirt.speedx = -10 #thrown in
+        disp_objects.append(shirt) #add to screen
 
 #connect buttons to callbacks
 GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game, bouncetime=100)
@@ -481,7 +468,7 @@ while run : #main game loop
         #rotate to align with our setup
         frame = cv2.rotate(frame, cv2.cv2.ROTATE_90_COUNTERCLOCKWISE)
         
-        # Draw framerate in corner of frame
+        #ghk48: Draw framerate in corner of frame
         cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
         ## All the results have been drawn on the frame, so it's time to display it.
