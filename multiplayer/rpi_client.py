@@ -25,6 +25,7 @@ class Client:
 hostname = 'localhost'#'192.168.1.128'
 port = 50007
 
+##=======Below is an early (not latest) version of the game script, used to prototype the connection======
 #stuff for actually playing the game/showing what is on the screen
 import os
 import random
@@ -55,6 +56,8 @@ pygame.mouse.set_visible(False)
 
 pygame.display.set_caption('It\'s Dangerous To Go Alone...')
 #========================object detection setup=======================
+# Source: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Raspberry_Pi_Guide.md#part-1---how-to-set-up-and-run-tensorflow-lite-object-detection-models-on-the-raspberry-pi
+#======
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
 class VideoStream:
@@ -190,6 +193,8 @@ freq = cv2.getTickFrequency()
 videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
 #=============end object detection setup===============================
+#Source: Source: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Raspberry_Pi_Guide.md#part-1---how-to-set-up-and-run-tensorflow-lite-object-detection-models-on-the-raspberry-pi
+#======
 #==============gameplay main==================================
 GPIO.setmode(GPIO.BCM)
 
@@ -252,21 +257,6 @@ def move_hero_right(channel):
         move_r_toggle = 0
         hero.speedx = 0
 # #image assets-------------------------------
-# hero_im = pygame.image.load("../staticBoy.png")
-# hero_im = pygame.transform.scale(hero_im,(50,50))
-# ground_im = pygame.image.load("../Ground.png")
-# ground_im = pygame.transform.scale(ground_im, (320, 40))
-# circle_im = pygame.image.load("../circle.png")
-# circle_im2 = pygame.transform.scale(circle_im, (30,30))
-# circle_im = pygame.transform.scale(circle_im, (100,100))
-# brick = pygame.image.load("../brick.png")
-# brick = pygame.transform.scale(brick, (40,40))
-# knife_im = pygame.image.load("../knife.png")
-# knife_im = pygame.transform.scale(knife_im,(30,30))
-# apple_im = pygame.image.load("../apple.png")
-# apple_im = pygame.transform.scale(apple_im,(30,30))
-# armor_im = pygame.image.load("../armor.png")
-# armor_im = pygame.transform.scale(armor_im,(15,15))
 #images for the side buttons
 stop_im = pygame.image.load("../stop.png")
 stop_im = pygame.transform.scale(stop_im,(30,30))
@@ -310,11 +300,7 @@ def redrawWindow():
     win.blit(bg_im, (-80,-140)) #background draw
     #global disp_objects
     largeFont = pygame.font.SysFont('comicsans', 25)
-    #outerFont = pygame.font.SysFont('comicsans', 27)
-    #win.blit(bg, (bgX, 0))
-    #win.blit(bg, (bgX2,0))
     health_text = largeFont.render('Health: '+str(hero.health), 1, (255,255,255))
-    #health_border = outerFont.render('Health: '+str(hero.health), 1, (255,255,255))
     hero_text = largeFont.render('Equipped: '+str(hero.env_type), 1, (255,255,255))
     env_text = largeFont.render('Current Env: '+str(env1.type), 1, (255,255,255))
     for obstacle in disp_objects:
@@ -323,7 +309,7 @@ def redrawWindow():
         else:
             obstacle.draw(win)
             
-    #win.blit(health_border, (10, 10))
+    #text game state indicators
     win.blit(health_text, (10, 10))
     win.blit(env_text, (10,24))
     win.blit(hero_text, (10,36))
@@ -519,8 +505,8 @@ while run : #main game loop
         time1 = (t2-t1)/freq
         frame_rate_calc= 1/time1
     
-    # #update the displayable objects
-    # #by sending the changes to the server
+    #update the displayable objects
+    #by sending the changes to the server
     print("sending")
     data_send = pickle.dumps(disp_objects)
     try:
