@@ -22,7 +22,7 @@ class Client:
         self.s.connect((self.HOST, self.PORT))
 
 
-hostname = 'localhost'#'192.168.1.128'
+hostname = 'localhost'
 port = 50007
 
 ##=======Below is an early (not latest) version of the game script, used to prototype the connection======
