@@ -1,20 +1,32 @@
+#####
+# It's Dangerous to Go Alone
+# Gregory Kaiser (ghk48)
+# Caeli MacLennan (cam476)
+# December 2020
+######
+# desktop_client.py contains a client that runs game logic and 
+# packages and sends data to a server using pickle
+
+#imports
 import socket, pickle
 import classes_multi
 
+#client class to open socket to server
 class Client:
     def __init__(self, HOST, PORT):
         self.HOST = HOST
         self.PORT = PORT
         self.s = None
 
-    def connect(self):
+    def connect(self): #establish connection
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((self.HOST, self.PORT))
 
-
+#local IPv4
 hostname = 'localhost'#'192.168.56.1'
 port = 50007
 
+##=======Below is an early (not latest) version of the game script, used to prototype the connection======
 #stuff for actually playing the game/showing what is on the screen
 import os
 import random
@@ -40,26 +52,7 @@ pygame.mouse.set_visible(False)
 
 pygame.display.set_caption('It\'s Dangerous To Go Alone...')
 #==============gameplay main==================================
-
-
-
-# #image assets-------------------------------
-# hero_im = pygame.image.load("../staticBoy.png")
-# hero_im = pygame.transform.scale(hero_im,(50,50))
-# ground_im = pygame.image.load("../Ground.png")
-# ground_im = pygame.transform.scale(ground_im, (320, 40))
-# circle_im = pygame.image.load("../circle.png")
-# circle_im2 = pygame.transform.scale(circle_im, (30,30))
-# circle_im = pygame.transform.scale(circle_im, (100,100))
-# brick = pygame.image.load("../brick.png")
-# brick = pygame.transform.scale(brick, (40,40))
-# knife_im = pygame.image.load("../knife.png")
-# knife_im = pygame.transform.scale(knife_im,(30,30))
-# apple_im = pygame.image.load("../apple.png")
-# apple_im = pygame.transform.scale(apple_im,(30,30))
-# armor_im = pygame.image.load("../armor.png")
-# armor_im = pygame.transform.scale(armor_im,(15,15))
-#images for the side buttons
+#fewer assets required because the paths are now passed as strings
 stop_im = pygame.image.load("../stop.png")
 stop_im = pygame.transform.scale(stop_im,(30,30))
 left_im = pygame.image.load("../left_arrow.png")
@@ -102,11 +95,7 @@ def redrawWindow():
     win.blit(bg_im, (-80,-140)) #background draw
     #global disp_objects
     largeFont = pygame.font.SysFont('comicsans', 25)
-    #outerFont = pygame.font.SysFont('comicsans', 27)
-    #win.blit(bg, (bgX, 0))
-    #win.blit(bg, (bgX2,0))
     health_text = largeFont.render('Health: '+str(hero.health), 1, (255,255,255))
-    #health_border = outerFont.render('Health: '+str(hero.health), 1, (255,255,255))
     hero_text = largeFont.render('Equipped: '+str(hero.env_type), 1, (255,255,255))
     env_text = largeFont.render('Current Env: '+str(env1.type), 1, (255,255,255))
     for obstacle in disp_objects:
@@ -114,12 +103,10 @@ def redrawWindow():
             obstacle.draw(win,hero)
         else:
             obstacle.draw(win)
-            
-    #win.blit(health_border, (10, 10))
+    #game state text
     win.blit(health_text, (10, 10))
     win.blit(env_text, (10,24))
     win.blit(hero_text, (10,36))
-    
     #icon indicators for player
     win.blit(stop_im, (290,10))
     win.blit(prayer_im, (290,80))
@@ -145,13 +132,6 @@ def drop_item_noncb():
         shirt.speedx = -10
         disp_objects.append(shirt)
 
-#connect buttons to callbacks
-# GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game, bouncetime=100)
-# GPIO.add_event_detect(23, GPIO.BOTH, callback=move_hero_left, bouncetime=100)
-# GPIO.add_event_detect(27, GPIO.BOTH, callback=move_hero_right, bouncetime=100)
-# GPIO.add_event_detect(22, GPIO.FALLING, callback = switch_state, bouncetime=100)
-#======================end gameplay setup====================================
-
 #client send the game data over the network
 client = Client(hostname, port)
 client.connect()
@@ -165,7 +145,8 @@ MENU_SCREEN = 4
 
 while run : #main game loop
     clock.tick(40)
-
+    
+    #instead of callbacks, the keypresses are read out here for desktop version
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_RIGHT]:
@@ -178,7 +159,7 @@ while run : #main game loop
     if keys[pygame.K_UP]:
         hero.jump()
 
-    if GAME_STATE==MENU_SCREEN:
+    if GAME_STATE==MENU_SCREEN: #main menu
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -194,8 +175,8 @@ while run : #main game loop
         win.blit(title_text2, (10, 110))
         pygame.display.update()
         time.sleep(3)
-        GAME_STATE = GAME_PLAY
-    elif GAME_STATE==END_SCREEN:
+        GAME_STATE = GAME_PLAY #switch to gameplay
+    elif GAME_STATE==END_SCREEN: #end screen
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -218,13 +199,13 @@ while run : #main game loop
         hero.speedy = 2
         disp_objects.append(hero)
         all_objects.append(hero)
-        GAME_STATE = MENU_SCREEN
-    elif GAME_STATE==GAME_PLAY:
+        GAME_STATE = MENU_SCREEN#switch to main menu
+    elif GAME_STATE==GAME_PLAY: #main game logic
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 run = False
-            if event.type is MOUSEBUTTONDOWN:
+            if event.type is MOUSEBUTTONDOWN: #clicking the screen jumps
                 hero.jump()
             if event.type == USEREVENT+2: #3 second timer
                 #check for environment matched
@@ -255,8 +236,8 @@ while run : #main game loop
         win.fill(BLACK)
         redrawWindow()
     
-    # #update the displayable objects
-    # #by sending the changes to the server
+    #update the displayable objects
+    #by sending the changes to the server
     print("sending")
     data_send = pickle.dumps(disp_objects)
     try:
@@ -264,8 +245,4 @@ while run : #main game loop
     except socket.error as e:
         print(str(e))
     
-            
-#GPIO.cleanup()
 pygame.quit()
-#cv2.destroyAllWindows()
-#videostream.stop()

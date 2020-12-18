@@ -1,3 +1,13 @@
+#####
+# It's Dangerous to Go Alone
+# Gregory Kaiser (ghk48)
+# Caeli MacLennan (cam476)
+# December 2020
+######
+# rpi_client.py contains a client that runs on the Raspberry Pi
+# and connects to the server script desktop_server.py,
+# which should already be awaiting a connection
+
 import socket, pickle
 import classes_multi
 

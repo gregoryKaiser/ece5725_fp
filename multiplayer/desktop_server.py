@@ -1,6 +1,18 @@
+#####
+# It's Dangerous to Go Alone
+# Gregory Kaiser (ghk48)
+# Caeli MacLennan (cam476)
+# December 2020
+######
+# desktop_server.py contains a server to be run on a local network
+# a client must be run while this script is runnning for a 
+# connection to be made
+
+#imports
 import socket, pickle
 import classes_multi
 
+#custom server class to establish connection
 class Server:
     def __init__(self, HOST, PORT):
         self.HOST = HOST
@@ -9,29 +21,32 @@ class Server:
         self.conn = None
         self.addr = None
     
-    def connect(self):
+    def connect(self): #connects using the socket library
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            self.s.bind((self.HOST, self.PORT))
+            self.s.bind((self.HOST, self.PORT)) #attempts to bind together
         except socket.error as e:
             print(str(e))
         self.s.listen(1)
-        print("Waiting for a connection")
+        print("Waiting for a connection") #waits until client is opened
         self.conn, self.addr = self.s.accept()
         print( "Connected by: ", self.addr)
         return self.conn, self.addr
 
-    def get_data(self):
+    def get_data(self): #recieves the data sent by pickle
         data = self.conn.recv(4096)
         data_var = pickle.loads(data)
         return data_var
 
-    def close_connection(self):
+    def close_connection(self): #close at end of script, or when client closes
         self.conn.close()
 
+#local IPv4
 hostname = 'localhost'
 port = 50007
 
+
+##=======Below is an early (not latest) version of the game script, used to prototype the connection======
 #stuff for actually playing the game/showing what is on the screen
 import os
 import random
@@ -57,26 +72,7 @@ pygame.mouse.set_visible(False)
 
 pygame.display.set_caption('It\'s Dangerous To Go Alone...')
 #==============gameplay main==================================
-
-
-
-# #image assets-------------------------------
-# hero_im = pygame.image.load("../staticBoy.png")
-# hero_im = pygame.transform.scale(hero_im,(50,50))
-# ground_im = pygame.image.load("../Ground.png")
-# ground_im = pygame.transform.scale(ground_im, (320, 40))
-# circle_im = pygame.image.load("../circle.png")
-# circle_im2 = pygame.transform.scale(circle_im, (30,30))
-# circle_im = pygame.transform.scale(circle_im, (100,100))
-# brick = pygame.image.load("../brick.png")
-# brick = pygame.transform.scale(brick, (40,40))
-# knife_im = pygame.image.load("../knife.png")
-# knife_im = pygame.transform.scale(knife_im,(30,30))
-# apple_im = pygame.image.load("../apple.png")
-# apple_im = pygame.transform.scale(apple_im,(30,30))
-# armor_im = pygame.image.load("../armor.png")
-# armor_im = pygame.transform.scale(armor_im,(15,15))
-#images for the side buttons
+#since this is the host, fewer images need to be loaded
 stop_im = pygame.image.load("../stop.png")
 stop_im = pygame.transform.scale(stop_im,(30,30))
 left_im = pygame.image.load("../left_arrow.png")
@@ -101,17 +97,12 @@ env1 = classes_multi.environment(100, 300, "cold", 1) #wintertime environment
 block = classes_multi.obstacle("../brick.png", 150, 160, 150, 160, 40, 40, "hot")
 block2 = classes_multi.obstacle("../brick.png", 30, 100, 30, 100, 40, 40, "hot")
 floor = classes_multi.obstacle("../Ground.png", 60, 200, 60, 200, 320, 30, "normal")
-#floor2 = classes_multi.obstacle(ground_im, -300, 200, -300, 200, 320, 15, "normal")
 
 all_objects = [hero, env1, floor, block]
 disp_objects = [hero, floor, block, block2]
 #====pygame timers and variables===
 run = True
 score = 0
-# pygame.time.set_timer(USEREVENT+1, 500)
-pygame.time.set_timer(USEREVENT+2, 3000)
-# global obj_capture #stores the last recognized object in the camera frame
-# obj_capture = "none"
 
 def redrawWindow():
     global obj_capture
@@ -145,31 +136,7 @@ def redrawWindow():
     
     pygame.display.update()
 
-def drop_item_noncb():
-    global all_objects
-    global disp_objects
-    global obj_capture
-    if(obj_capture in recog_knife):
-        knife = classes_multi.weapon("../knife.png", "knife", 310, 50, 310, 50, 30, 30, True, 10)
-        knife.speedx = -10
-        disp_objects.append(knife)
-    elif(obj_capture in recog_fruit):
-        apple = classes_multi.item("../apple.png", "apple", 310, 50, 310, 50, 30, 30, False)
-        apple.speedx = -10
-        disp_objects.append(apple)
-    elif(obj_capture in recog_armor):
-        shirt = classes_multi.armor("../armor.png", "armor", 310, 50, 310, 50, 15, 15, True, 10, "cold", "torso")
-        shirt.speedx = -10
-        disp_objects.append(shirt)
-
-#connect buttons to callbacks
-# GPIO.add_event_detect(17, GPIO.FALLING, callback=quit_game, bouncetime=100)
-# GPIO.add_event_detect(23, GPIO.BOTH, callback=move_hero_left, bouncetime=100)
-# GPIO.add_event_detect(27, GPIO.BOTH, callback=move_hero_right, bouncetime=100)
-# GPIO.add_event_detect(22, GPIO.FALLING, callback = switch_state, bouncetime=100)
-#======================end gameplay setup====================================
-
-#server send the game data over the network
+#instantiate server send the game data over the network
 server = Server(hostname, port)
 server.connect()
 
@@ -196,13 +163,10 @@ while run : #main game loop
         print("Closing connection")
         server.close_connection()
         break
-    
+    #all that is necessary is a screen update
     win.fill(BLACK)
     redrawWindow()
 
-#GPIO.cleanup()
 pygame.quit()
-#cv2.destroyAllWindows()
-#videostream.stop()
 
 
