@@ -1,4 +1,12 @@
-#
+#####
+# It's Dangerous to Go Alone
+# Gregory Kaiser (ghk48)
+# Caeli MacLennan (cam476)
+# December 2020
+######
+# game_and_detect_update.py is a single player game that uses image 
+# detection to spawn items for a playable character
+
 import os
 import random
 import classes
@@ -15,9 +23,9 @@ import importlib.util
 import pygame
 from pygame.locals import *
 
-#TFT stuff
+#to drive the TFT
 os.putenv('SDL_VIDEODRIVER','fbcon')
-os.putenv('SDL_FBDEV','/dev/fb1')#might have to change to fb1
+os.putenv('SDL_FBDEV','/dev/fb1')
 os.putenv('SDL_MOUSEDRV','TSLIB') #Track mouse clicks on piTFT
 os.putenv('SDL_MOUSEDEV','/dev/input/touchscreen')
 
@@ -31,6 +39,8 @@ pygame.mouse.set_visible(False)
 pygame.display.set_caption('It\'s Dangerous To Go Alone...')
 
 #========================object detection setup=======================
+# Source: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Raspberry_Pi_Guide.md#part-1---how-to-set-up-and-run-tensorflow-lite-object-detection-models-on-the-raspberry-pi
+#=====================
 # Define VideoStream class to handle streaming of video from webcam in separate processing thread
 # Source - Adrian Rosebrock, PyImageSearch: https://www.pyimagesearch.com/2015/12/28/increasing-raspberry-pi-fps-with-python-and-opencv/
 class VideoStream:
@@ -165,24 +175,20 @@ freq = cv2.getTickFrequency()
 # Initialize video stream
 videostream = VideoStream(resolution=(imW,imH),framerate=30).start()
 time.sleep(1)
+#=======================================================================
+# Source: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Raspberry_Pi_Guide.md#part-1---how-to-set-up-and-run-tensorflow-lite-object-detection-models-on-the-raspberry-pi
 #=============end object detection setup===============================
-#==============gameplay main==================================
-GPIO.setmode(GPIO.BCM)
+
+#==============gameplay setup==================================
 
 #Button setup
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 17, close to power supply
 GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 22 signal
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 23
 GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 27
 GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 26
 GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP) #init but 16
-
-move_l_toggle = 0
-move_r_toggle = 0
-#Button callback
-def quit_game(channel):
-    global run
-    run = False
 
 #finite state machine
 GAME_STATE = 4
@@ -196,6 +202,7 @@ recog_knife = ["knife", "scissors"]
 recog_fruit = ["apple","banana","orange"]
 recog_armor = ["umbrella","backpack","tie"]
 
+#switches the game state to object detection and back
 def switch_state(channel):
     global GAME_STATE
     global GAME_PLAY
@@ -209,6 +216,16 @@ def switch_state(channel):
             #spawn an object
             drop_item_noncb()
 
+#to control player stopping/starting
+move_l_toggle = 0
+move_r_toggle = 0
+
+#quit button callback
+def quit_game(channel):
+    global run
+    run = False
+
+#moves the hero left, or halts, if already moving
 def move_hero_left(channel):
     global hero
     global move_l_toggle
@@ -219,7 +236,7 @@ def move_hero_left(channel):
         move_l_toggle = 0
         hero.speedx = 0
 
-
+#moves the hero right, or halts, if already moving
 def move_hero_right(channel):
     global hero
     global move_r_toggle
@@ -229,7 +246,6 @@ def move_hero_right(channel):
     else:
         move_r_toggle = 0
         hero.speedx = 0
-
 
 #image assets-------------------------------
 hero_im = pygame.image.load("rightBoy.png")
@@ -247,7 +263,6 @@ knife_im = pygame.image.load("rightknife.png")
 knife_im = pygame.transform.scale(knife_im,(30,30))
 knife_im_l = pygame.image.load("leftknife.png")
 knife_im_l = pygame.transform.scale(knife_im_l,(30,30))
-
 apple_im = pygame.image.load("apple.png")
 apple_im = pygame.transform.scale(apple_im,(30,30))
 armor_im = pygame.image.load("armor.png")
@@ -265,38 +280,39 @@ prayer_im = pygame.transform.scale(prayer_im,(30,30))
 bg_im = pygame.image.load("background.png")
 #image assets above-------------------------------
 
-clock = pygame.time.Clock()
-
 #====Create game objects====
+clock = pygame.time.Clock()
 global hero
 hero = classes.character(hero_im_l, hero_im, 90, 50, 90, 50, 25, 50)
 hero.speedx = 0
 hero.speedy = 2
 
+#level design============
 env1 = classes.environment(100, 300, "cold", 1) #wintertime environment
 block = classes.obstacle(brick, 150, 160, 150, 160, 40, 40, "hot")
 block2 = classes.obstacle(brick, 30, 100, 30, 100, 40, 40, "hot")
 floor = classes.obstacle(ground_im, 60, 200, 60, 200, 320, 15, "normal")
-#floor2 = classes.obstacle(ground_im, -300, 200, -300, 200, 320, 15, "normal")
 
 all_objects = [hero, env1, floor, block]
 disp_objects = [hero, floor, block, block2]
 #====pygame timers and variables===
 run = True
 score = 0
-# pygame.time.set_timer(USEREVENT+1, 500)
-pygame.time.set_timer(USEREVENT+2, 3000)
+pygame.time.set_timer(USEREVENT+2, 3000) #timer for environmental effects
 global obj_capture #stores the last recognized object in the camera frame
-obj_capture = "none"
+obj_capture = "none" #default object detection
 
+#updates the screen during the GAME_PLAY state
 def redrawWindow():
-    global obj_capture
+    # global obj_capture #for debugging last-captured image
     global hero #for drawing relative to hero position
     win.blit(bg_im, (-80,-140)) #background draw
     largeFont = pygame.font.SysFont('comicsans', 25)
+    #status text in upper left
     health_text = largeFont.render('Health: '+str(hero.health), 1, (255,255,255))
     hero_text = largeFont.render('Equipped: '+str(hero.env_type), 1, (255,255,255))
     env_text = largeFont.render('Current Env: '+str(env1.type), 1, (255,255,255))
+    #use draw member function for every displayable object
     for obstacle in disp_objects:
         if isinstance(obstacle,classes.item):
             obstacle.draw(win,hero)
@@ -314,19 +330,20 @@ def redrawWindow():
     #update display
     pygame.display.update()
 
+#drops an item when the game state is switch from object capture to game play
 def drop_item_noncb():
     global all_objects
     global disp_objects
     global obj_capture
-    if(obj_capture in recog_knife):
+    if(obj_capture in recog_knife): #if looking at scissors/knife, spawn knife
         knife = classes.weapon(knife_im_l, knife_im, "knife", 310, 50, 310, 50, 30, 30, True, 10) #new item
         knife.speedx = -10 #thrown in
         disp_objects.append(knife) #add to screen
-    elif(obj_capture in recog_fruit):
+    elif(obj_capture in recog_fruit): #if looking at fruit, spawn fruit
         apple = classes.item(apple_im, "apple", 310, 50, 310, 50, 30, 30, False) #new item
         apple.speedx = -10 #thrown in
         disp_objects.append(apple) #add to screen
-    elif(obj_capture in recog_armor):
+    elif(obj_capture in recog_armor): #if looking at tie/umbrella, spawn armor
         shirt = classes.armor(armor_im, "armor", 310, 50, 310, 50, 15, 15, True, 10, "cold", "torso") #new item
         shirt.speedx = -10 #thrown in
         disp_objects.append(shirt) #add to screen
@@ -340,11 +357,12 @@ GPIO.add_event_detect(22, GPIO.FALLING, callback = switch_state, bouncetime=100)
 
 while run : #main game loop
     clock.tick(40)
-    if GAME_STATE==MENU_SCREEN:
+    if GAME_STATE==MENU_SCREEN: #first menu screen
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 run = False
+        # main title
         title_font = pygame.font.SysFont('comicsans', 50)
         color = 200,200,200
         title_text = title_font.render('It\'s Dangerous', 1, (color))
@@ -353,8 +371,9 @@ while run : #main game loop
         win.blit(title_text2, (10, 110))
         pygame.display.update()
         time.sleep(3)
+        #move to gameplay
         GAME_STATE = GAME_PLAY
-    elif GAME_STATE==END_SCREEN:
+    elif GAME_STATE==END_SCREEN: #last menu death screen
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -375,12 +394,12 @@ while run : #main game loop
         disp_objects.append(hero)
         all_objects.append(hero)
         GAME_STATE = MENU_SCREEN
-    elif GAME_STATE==GAME_PLAY:
+    elif GAME_STATE==GAME_PLAY: #playing the game state
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 run = False
-            if event.type is MOUSEBUTTONDOWN:
+            if event.type is MOUSEBUTTONDOWN: #touchscreen press
                 hero.jump()
             if event.type == USEREVENT+2: #3 second timer
                 #check for environment matched
@@ -407,8 +426,9 @@ while run : #main game loop
         #clock.tick(40)
         win.fill(BLACK)
         redrawWindow()
-    elif GAME_STATE==OBJ_DETECT:
-        #below is mostly from the tutorial script-----
+    elif GAME_STATE==OBJ_DETECT: #object detection phase
+        #-----below is mostly from the tutorial script-----
+        #Source: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Raspberry_Pi_Guide.md#part-1---how-to-set-up-and-run-tensorflow-lite-object-detection-models-on-the-raspberry-pi
         #for frame1 in camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -472,7 +492,6 @@ while run : #main game loop
         cv2.putText(frame,'FPS: {0:.2f}'.format(frame_rate_calc),(30,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,0),2,cv2.LINE_AA)
 
         ## All the results have been drawn on the frame, so it's time to display it.
-        #cv2.imshow('Object detector', frame)
         
         #ghk48: write to temp file so pygame can read and display
         cv2.imwrite('./tmp.bmp', frame) #write frame
@@ -486,7 +505,7 @@ while run : #main game loop
         time1 = (t2-t1)/freq
         frame_rate_calc= 1/time1
     
-            
+#after game quit, clean up
 GPIO.cleanup()
 pygame.quit()
 cv2.destroyAllWindows()
